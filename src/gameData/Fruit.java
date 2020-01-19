@@ -1,12 +1,8 @@
 package gameData;
 import java.util.Collection;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import dataStructure.DGraph;
-import dataStructure.Edge;
 import dataStructure.edge_data;
 import dataStructure.node_data;
 import utils.Point3D;

@@ -29,6 +29,7 @@ import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
+import gameClient.KML_Logger;
 import gameData.Fruit;
 import gameData.Robot;
 import utils.Point3D;
@@ -45,19 +46,19 @@ public class MyGameGUI extends JPanel {
 	private JPanel gamePanel;
 
 	// Manual game fields
-	private Thread manualMoveRobot;
+	private Thread manualMoveMario;
 	private Thread manualChooseLocation;
 	private JButton moveButton;
 
 	// Automatic game fields
 	private Thread autoChooseLocation;
-	private Thread autoMoveRobot;
+	private Thread autoMoveMario;
 	private ArrayList<Fruit> gameFruits = new ArrayList<>();
 
 	private BufferedImage appleImage;
 	private BufferedImage bananaImage;
-	private BufferedImage robotImage;
-	private Image background;
+	private BufferedImage marioImage;
+	private Image backgroundImage;
 
 	private static int robotsNum = 0;
 	private static int robotsCounter = 0;
@@ -66,16 +67,26 @@ public class MyGameGUI extends JPanel {
 	// Game mode flags
 	private boolean autoMode = false;
 	private boolean modeFlag = false;
+	private KML_Logger kml;
 	
 	public static void createJFrame() {
 		JFrame mainFrame = new JFrame("Game");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.add(new MyGameGUI(5));
+		
+		String lNumber = JOptionPane.showInputDialog("Enter level");
+		try {
+			int levelNumber = Integer.parseInt(lNumber);
+			if (!(levelNumber >= 0 && levelNumber < 24)) throw new RuntimeException();
+			mainFrame.add(new MyGameGUI(levelNumber));
+		} catch (Exception Ex) {
+			JOptionPane.showMessageDialog(null, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
 		mainFrame.pack();
 		mainFrame.setVisible(true);
 		mainFrame.setLocationRelativeTo(null);
 	}
-
+	
 	public MyGameGUI(int gameNumber) {
 		gamePanel = new JPanel();
 		gamePanel.setPreferredSize(new Dimension(X_RANGE, Y_RANGE));
@@ -83,8 +94,9 @@ public class MyGameGUI extends JPanel {
 		gamePanel.add(moveButton);
 		gamePanel.add(Box.createHorizontalGlue());
 		this.add(gamePanel, BorderLayout.SOUTH);
-		background = Toolkit.getDefaultToolkit().createImage("Cold.png");
-
+		backgroundImage = Toolkit.getDefaultToolkit().createImage("Background.jpg");
+		kml = new KML_Logger(gameNumber);
+		
 		// Manual game threads
 		manualChooseLocation = new Thread() {
 			public void run() {
@@ -102,11 +114,11 @@ public class MyGameGUI extends JPanel {
 				}
 
 				myGame.startGame();
-				manualMoveRobot.start();
+				manualMoveMario.start();
 			}
 		};
 
-		manualMoveRobot = new Thread() {
+		manualMoveMario = new Thread() {
 			public void run() {
 				JSONObject getManualGameScore;
 				long start = System.currentTimeMillis();
@@ -133,9 +145,9 @@ public class MyGameGUI extends JPanel {
 			public void run() {
 				gameFruits = Automated.getGameFruits(gameFruits, gameGraph, myGame);
 				while (robotsCounter < robotsNum) {
-					Fruit bestFruit = Automated.getBestFruit(gameFruits, myGame);
+					Fruit bestFruit = Automated.getBestFruit(gameFruits);
 
-					// Choose the best location based on the greatest fruit value
+					// Choose the best location based on the greatest fruits values
 					int autoSrcNode;
 					if (bestFruit.getType() == 1)
 						autoSrcNode = bestFruit.getEdge().getSrc(); // Apple
@@ -143,17 +155,17 @@ public class MyGameGUI extends JPanel {
 						autoSrcNode = bestFruit.getEdge().getDest(); // Banana
 					myGame.addRobot(autoSrcNode);
 
-					gameFruits = Automated.removeBest(gameFruits, myGame, bestFruit);
+					gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
 					repaint();
 					robotsCounter++;
 				}
 
 				myGame.startGame();
-				autoMoveRobot.start();
+				autoMoveMario.start();
 			}
 		};
 
-		autoMoveRobot = new Thread() {
+		autoMoveMario = new Thread() {
 			public void run() {
 				JSONObject getAutoGameScore;
 				long start = System.currentTimeMillis();
@@ -165,16 +177,16 @@ public class MyGameGUI extends JPanel {
 							getAutoGameScore = new JSONObject(myGame.toString());
 							JSONObject autoGameScore = getAutoGameScore.getJSONObject("GameServer");
 							totalGameScore = autoGameScore.getInt("grade");
-
+							
 							for (String autoRobot : myGame.getRobots()) {
 								JSONObject autoGameString = new JSONObject(autoRobot);
 								JSONObject autoGameRobot = autoGameString.getJSONObject("Robot");
 								int robotSN = autoGameRobot.getInt("id");
 								int autoRobotSrc = autoGameRobot.getInt("src");
 								int autoRobotDest = autoGameRobot.getInt("dest");
-
+								
 								if (autoRobotDest == -1) {
-									autoRobotDest = Automated.getNext(gameFruits, gameGraph, myGame, autoRobotSrc);
+									autoRobotDest = Automated.getNext(gameFruits, gameGraph, autoRobotSrc);
 									myGame.chooseNextEdge(robotSN, autoRobotDest);
 								}
 							}
@@ -188,6 +200,16 @@ public class MyGameGUI extends JPanel {
 						repaint();
 					}
 				}
+				
+				int n = JOptionPane.showConfirmDialog(null, "Export to KML ?" , "Export" , JOptionPane.YES_NO_OPTION);
+	            if (n == JOptionPane.YES_OPTION){
+	                kml.closeDocument();
+	                System.exit(0);
+	            }
+	            
+	            else {
+	                System.exit(0);
+	            }
 			}
 		};
 
@@ -195,7 +217,7 @@ public class MyGameGUI extends JPanel {
 		myGame = Game_Server.getServer(gameNumber);
 		gameGraph.init(myGame.getGraph());
 
-		// Extract number robots number from JSON
+		// Extract robots number from JSON
 		JSONObject getGame;
 		try {
 			getGame = new JSONObject(myGame.toString());
@@ -211,8 +233,8 @@ public class MyGameGUI extends JPanel {
 			appleImage = ImageIO.read(appleFile);
 			File bananaFile = new File("Yellow.png");
 			bananaImage = ImageIO.read(bananaFile);
-			File robotFile = new File("Mario.png");
-			robotImage = ImageIO.read(robotFile);
+			File marioFile = new File("Mario.png");
+			marioImage = ImageIO.read(marioFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -249,7 +271,7 @@ public class MyGameGUI extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D)g;
-		g.drawImage(background, 0, 50, 1200, 500, null);
+		g.drawImage(backgroundImage, 5, 50, 1200, 500, null);
 
 		Collection<node_data> nodesCol = gameGraph.getV();
 		double minX = getMinX(nodesCol);
@@ -295,9 +317,10 @@ public class MyGameGUI extends JPanel {
 			fruitX = scale(fruitX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			fruitY = scale(fruitY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			if (newFruit.getType() == 1)
-				g.drawImage(appleImage, (int)fruitX, (int)fruitY, 20, 20, this);
+				g.drawImage(appleImage, (int)fruitX - 5, (int)fruitY - 5, 20, 20, this);
 			else
-				g.drawImage(bananaImage, (int)fruitX, (int)fruitY, 20, 20, this);
+				g.drawImage(bananaImage, (int)fruitX - 5, (int)fruitY - 5, 20, 20, this);
+			kml.addFruitPlaceMark(newFruit.getType() , newFruit.getPos().toString());
 		}
 
 		// Robots drawl
@@ -309,15 +332,21 @@ public class MyGameGUI extends JPanel {
 			double robotY = robotLocation.y();
 			robotX = scale(robotX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			robotY = scale(robotY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
-			g.drawImage(robotImage, (int)robotX - 20, (int)robotY - 20, 40, 60, this);
+			g.drawImage(marioImage, (int)robotX - 20, (int)robotY - 20, 40, 60, this);
+			
+			kml.addRobotPlaceMark(newRobot.getPos().toString());
 		}
 
 		// Remaining time drawl
 		g.setFont(new Font("Comic Sans MS", Font.BOLD, 15));
 		g.setColor(Color.BLACK);
 		long timeLeft = myGame.timeToEnd() / 1000;
-		if (timeLeft < 10) g.setColor(Color.RED);
-		if (timeLeft < 1) g.drawString("GAME OVER", X_RANGE - 100, 20);
+		if (timeLeft < 10) {
+			g.setColor(Color.RED);
+			if (timeLeft > 0.05) g.drawString("HURRY UP", X_RANGE - 85, 40);
+		}
+		
+		if (timeLeft < 0.05) g.drawString("GAME OVER", X_RANGE - 100, 20);
 		else g.drawString("Remaining time : " +timeLeft, X_RANGE - 150, 20);
 		
 		// Total score drawl
@@ -338,12 +367,12 @@ public class MyGameGUI extends JPanel {
 		}
 
 		if (!autoMode) {
-			if (!manualChooseLocation.isAlive() && !manualMoveRobot.isAlive())
+			if (!manualChooseLocation.isAlive() && !manualMoveMario.isAlive())
 				manualChooseLocation.start();
 		}
 
 		else {
-			if (!autoChooseLocation.isAlive() && !autoMoveRobot.isAlive())
+			if (!autoChooseLocation.isAlive() && !autoMoveMario.isAlive())
 				autoChooseLocation.start();
 		}
 	}

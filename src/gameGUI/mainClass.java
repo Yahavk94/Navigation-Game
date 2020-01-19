@@ -1,6 +1,6 @@
 package gameGUI;
 
-public class mainClass {
+public class MainClass {
 
 	public static void main(String[] args) {
 		MyGameGUI gui = new MyGameGUI(15);

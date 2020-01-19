@@ -37,7 +37,6 @@ public class DGraph implements graph, Serializable {
 
 	@Override
 	public void addNode(node_data n) {
-		//if (n.getKey() == 0) System.out.println("ERR! 0 cannot be added as a node");
 		if (!this.gNode.containsKey(n.getKey())) {
 			this.gNode.put(n.getKey(), n);
 			this.numNodes++;

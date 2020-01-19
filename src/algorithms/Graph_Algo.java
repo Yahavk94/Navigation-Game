@@ -57,13 +57,15 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	public boolean isConnected() {
 		if (this.graphAlgo.nodeSize() == 0) return true; // Base case
 		if (this.graphAlgo.nodeSize() == 1) return true; // Base case
-
-		boolean[] dNodes = new boolean[this.graphAlgo.nodeSize()];
+		
+		int actualSize = this.graphAlgo.nodeSize();
+		boolean[] dNodes = new boolean[actualSize + 1]; // 0 might be a node
+		
 		for (int i = 0; i < dNodes.length; i++)
 			dNodes[i] = false; // Initialize as not visited
 
 		iterativeDFS(this.graphAlgo, dNodes);
-		for (int i = 0; i < dNodes.length; i++)
+		for (int i = 0; i < actualSize; i++)
 			if (!dNodes[i]) return false; // Check connectivity
 
 		DGraph tGraph = getTranspose();
@@ -71,7 +73,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			dNodes[i] = false; // Initialize as not visited
 
 		iterativeDFS(tGraph, dNodes);
-		for (int i = 0; i < dNodes.length; i++)
+		for (int i = 0; i < actualSize; i++)
 			if (!dNodes[i]) return false; // Check (transpose) connectivity
 
 		return true;
@@ -188,19 +190,19 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 
 	private void iterativeDFS(DGraph dGraph, boolean[] dNodes) {
 		Stack<Integer> nodeStack = new Stack<>();
-		nodeStack.push(1); // Push the source node into the stack
+		nodeStack.push(0); // Push the source node into the stack
 
 		while (!nodeStack.isEmpty()) {
 			int startNode = nodeStack.pop(); // Pop a vertex from stack
 
-			if (dNodes[startNode - 1]) continue; // Ignore if already discovered
-			dNodes[startNode - 1] = true; // startNode has just discovered
+			if (dNodes[startNode]) continue; // Ignore if already discovered
+			dNodes[startNode] = true; // startNode has just discovered
 
 			Collection<edge_data> edgesCol = dGraph.getE(startNode);
 			if (edgesCol != null) {
 				for (edge_data eD : edgesCol) {
 					int otherNode = eD.getDest();
-					if (!dNodes[otherNode - 1])
+					if (!dNodes[otherNode])
 						nodeStack.push(otherNode);
 				}
 			}
