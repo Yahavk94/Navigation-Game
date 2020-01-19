@@ -140,6 +140,16 @@ public class MyGameGUI extends JPanel {
 						repaint();
 					}
 				}
+				
+				int n = JOptionPane.showConfirmDialog(null, "Export to KML?" ,"Export" , JOptionPane.YES_NO_OPTION);
+	            if (n == JOptionPane.YES_OPTION){
+	                kml.closeDocument();
+	                System.exit(0);
+	            }
+	            
+	            else {
+	                System.exit(0);
+	            }
 			}
 		};
 
