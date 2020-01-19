@@ -9,9 +9,9 @@ public class KML_Logger {
 	private StringBuilder content;
 
 	private static final String NodeStyle = "node";
-	private static final String BananaStyle = "Yellow.png";
-	private static final String AppleStyle = "Red.png";
-	private static final String RobotStyle = "Mario.png";
+	private static final String BananaStyle = "Yellow";
+	private static final String AppleStyle = "Red";
+	private static final String RobotStyle = "Mario";
 	
 	public KML_Logger(int levelNumber) {
 		this.levelNumber = levelNumber;

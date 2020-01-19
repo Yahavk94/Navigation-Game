@@ -11,7 +11,7 @@ import gameData.Fruit;
 public class Automated {
 	
 	/**
-	 * Update gameFruits ArrayList during the game
+	 * Update gameFruits ArrayList during the automatic game
 	 * @param gameFruits
 	 * @param gameGraph
 	 * @param myGame
@@ -27,7 +27,7 @@ public class Automated {
 	}
 	
 	/**
-	 * Find and return the greatest value fruit
+	 * Find and return the fruit with the greatest value
 	 * @param gameFruits
 	 * @param myGame
 	 * @return bestFruit
@@ -43,7 +43,7 @@ public class Automated {
 	}
 	
 	/**
-	 * Remove from gameFruits ArrayList the greatest value fruit
+	 * Remove from gameFruits ArrayList the fruit with the greatest value
 	 * @param gameFruits
 	 * @param myGame
 	 * @param delFruit
@@ -62,7 +62,7 @@ public class Automated {
 	}
 	
 	/**
-	 * Find the next node for a specified robot using greedy method
+	 * Find the next node for a specified robot
 	 * @param gameFruits
 	 * @param gameGraph
 	 * @param myGame
@@ -111,7 +111,7 @@ public class Automated {
 		}
 
 		robotPath.add(nextNode);
-		//gameFruits.remove(toRemove);
+		gameFruits.remove(toRemove);
 		List<node_data> greedyPath = myGraph.TSP(robotPath);
 		return greedyPath.get(1).getKey();
 	}

@@ -67,7 +67,10 @@ public class MyGameGUI extends JPanel {
 	// Game mode flags
 	private boolean autoMode = false;
 	private boolean modeFlag = false;
+	
+	// KML fields
 	private KML_Logger kml;
+	private boolean nodeJustOnce = false;
 	
 	public static void createJFrame() {
 		JFrame mainFrame = new JFrame("Game");
@@ -201,7 +204,7 @@ public class MyGameGUI extends JPanel {
 					}
 				}
 				
-				int n = JOptionPane.showConfirmDialog(null, "Export to KML ?" , "Export" , JOptionPane.YES_NO_OPTION);
+				int n = JOptionPane.showConfirmDialog(null, "Export to KML?" ,"Export" , JOptionPane.YES_NO_OPTION);
 	            if (n == JOptionPane.YES_OPTION){
 	                kml.closeDocument();
 	                System.exit(0);
@@ -272,28 +275,36 @@ public class MyGameGUI extends JPanel {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D)g;
 		g.drawImage(backgroundImage, 5, 50, 1200, 500, null);
-
+		
+		// For scaling
 		Collection<node_data> nodesCol = gameGraph.getV();
 		double minX = getMinX(nodesCol);
 		double maxX = getMaxX(nodesCol);
 		double minY = getMinY(nodesCol);
 		double maxY = getMaxY(nodesCol);
-
+		
+		double invertedSrc, invertedDest;
+		
+		// Black edges drawl
 		for (node_data node : nodesCol) {
 			Collection<edge_data> edgesCol = gameGraph.getE(node.getKey());
 			for (edge_data edge : edgesCol) {
 				Point3D srcLocation = node.getLocation();
 				node_data dest = gameGraph.getNode(edge.getDest());
 				Point3D destLocation = dest.getLocation();
-
-				// Black edges drawl
 				g.setColor(Color.BLACK);
+				
 				double scaledX = scale(srcLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
 				double scaledY = scale(srcLocation.y(), minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
+				
 				double scaledXDest = scale(destLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
 				double scaledYDest = scale(destLocation.y(), minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
+				
+				invertedSrc = Y_RANGE - scaledY;
+				invertedDest = Y_RANGE - scaledYDest;
+				
 				g2.setStroke(new BasicStroke(2));
-				g2.drawLine((int)scaledX + 5, (int)scaledY + 5, (int)scaledXDest + 5, (int)scaledYDest + 5);
+				g2.drawLine((int)scaledX + 5, (int)invertedSrc + 5, (int)scaledXDest + 5, (int)invertedDest + 5);
 			}
 		}
 
@@ -303,9 +314,15 @@ public class MyGameGUI extends JPanel {
 			g.setColor(Color.RED);
 			double scaledX = scale(nodeLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
 			double scaledY = scale(nodeLocation.y() ,minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
-			g.fillOval((int)scaledX, (int)scaledY, 10, 10);
-			g.drawString("" +node.getKey(), (int)scaledX, (int)scaledY - 5);
+			invertedSrc = Y_RANGE - scaledY;
+			g.fillOval((int)scaledX, (int)invertedSrc, 10, 10);
+			g.drawString("" +node.getKey(), (int)scaledX, (int)invertedSrc - 5);
+			
+			if (!nodeJustOnce)
+				kml.addNodePlaceMark(node.getLocation().toString());
 		}
+		
+		nodeJustOnce = true;
 
 		// Fruits drawl
 		List<String> fruitsList = myGame.getFruits();
@@ -316,10 +333,14 @@ public class MyGameGUI extends JPanel {
 			double fruitY = fruitLocation.y();
 			fruitX = scale(fruitX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			fruitY = scale(fruitY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
+			
+			invertedDest = Y_RANGE - fruitY;
+			
 			if (newFruit.getType() == 1)
-				g.drawImage(appleImage, (int)fruitX - 5, (int)fruitY - 5, 20, 20, this);
+				g.drawImage(appleImage, (int)fruitX - 5, (int)invertedDest - 5, 20, 20, this);
 			else
-				g.drawImage(bananaImage, (int)fruitX - 5, (int)fruitY - 5, 20, 20, this);
+				g.drawImage(bananaImage, (int)fruitX - 5, (int)invertedDest - 5, 20, 20, this);
+			
 			kml.addFruitPlaceMark(newFruit.getType() , newFruit.getPos().toString());
 		}
 
@@ -330,9 +351,12 @@ public class MyGameGUI extends JPanel {
 			Point3D robotLocation = newRobot.getPos();
 			double robotX = robotLocation.x();
 			double robotY = robotLocation.y();
+			
 			robotX = scale(robotX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			robotY = scale(robotY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
-			g.drawImage(marioImage, (int)robotX - 20, (int)robotY - 20, 40, 60, this);
+			
+			invertedDest = Y_RANGE - robotY;
+			g.drawImage(marioImage, (int)robotX - 20, (int)invertedDest - 20, 40, 60, this);
 			
 			kml.addRobotPlaceMark(newRobot.getPos().toString());
 		}
