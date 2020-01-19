@@ -73,7 +73,7 @@ public class MyGameGUI extends JPanel {
 	private boolean nodeJustOnce = false;
 	
 	public static void createJFrame() {
-		JFrame mainFrame = new JFrame("Game");
+		JFrame mainFrame = new JFrame("Th3 M4z3 0F W4z3");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		String lNumber = JOptionPane.showInputDialog("Enter level");
