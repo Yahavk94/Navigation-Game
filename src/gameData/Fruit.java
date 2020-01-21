@@ -30,8 +30,9 @@ public class Fruit {
 		}
 		
 		this.fruitEdge = setEdge(gameGraph);
-		System.out.println(fruitEdge.getSrc());
-		System.out.println(fruitEdge.getDest());
+		//if(this.fruitEdge.getSrc()==21&&this.fruitEdge.getDest()==32) {
+			//this.fruitEdge = resetEdge(gameGraph, fruitEdge);
+		//}
 	}
 	
 	public int getType() {
@@ -63,7 +64,7 @@ public class Fruit {
 	}
 	
 	private edge_data setEdge(DGraph gameGraph) {
-		double epsilon = 0.00001;
+		double epsilon = 0.000001;
 		double edgeDist = 0;
 		double srcToFruitDist = 0, fruitToDestDist = 0, fruitDist = 0;
 		
@@ -71,6 +72,55 @@ public class Fruit {
 		for (node_data nD : nodesCol) {
 			Collection<edge_data> edgesCol = gameGraph.getE(nD.getKey());
 			for (edge_data eD : edgesCol) {
+				double xDist = nD.getLocation().x() - gameGraph.getNode(eD.getDest()).getLocation().x();
+				double yDist = nD.getLocation().y() - gameGraph.getNode(eD.getDest()).getLocation().y();
+				edgeDist = Math.sqrt(xDist * xDist + yDist * yDist);
+				
+				double xSrcToFruit = nD.getLocation().x() - this.getPos().x();
+				double ySrcToFruit = nD.getLocation().y() - this.getPos().y();
+				double xFruitToDest = this.getPos().x() - gameGraph.getNode(eD.getDest()).getLocation().x();
+				double yFruitToDest = this.getPos().y() - gameGraph.getNode(eD.getDest()).getLocation().y();
+				srcToFruitDist = Math.sqrt(xSrcToFruit * xSrcToFruit + ySrcToFruit * ySrcToFruit);
+				fruitToDestDist = Math.sqrt(xFruitToDest * xFruitToDest + yFruitToDest * yFruitToDest);
+				fruitDist = srcToFruitDist + fruitToDestDist;
+				
+				boolean srcIsSmaller = false;
+				if (Math.abs(edgeDist - fruitDist) < epsilon) {
+					if (eD.getSrc() < eD.getDest()) srcIsSmaller = true;
+					
+					if (this.getType() == 1) {
+						if (srcIsSmaller) return eD;
+						return gameGraph.getEdge(eD.getDest(), eD.getSrc());
+					}
+					
+					else if (this.getType() == -1) {
+						if (srcIsSmaller) return gameGraph.getEdge(eD.getDest(), eD.getSrc());
+						 return eD;
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private edge_data resetEdge(DGraph gameGraph, edge_data prev) {
+		double epsilon = 0.000001;
+		double edgeDist = 0;
+		double srcToFruitDist = 0, fruitToDestDist = 0, fruitDist = 0;
+		
+		Collection<node_data> nodesCol = gameGraph.getV();
+		for (node_data nD : nodesCol) {
+			System.out.println(nD.getKey());
+			if (nD.getKey() < 21) continue;
+			
+			Collection<edge_data> edgesCol = gameGraph.getE(nD.getKey());
+			for (edge_data eD : edgesCol) {
+				if (nD.getKey() == 21&&eD.getDest() <= 32) continue;
+				if (eD.getDest() == 21 && eD.getSrc() ==32) continue;
+				
+				
+				
 				double xDist = nD.getLocation().x() - gameGraph.getNode(eD.getDest()).getLocation().x();
 				double yDist = nD.getLocation().y() - gameGraph.getNode(eD.getDest()).getLocation().y();
 				edgeDist = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
@@ -100,6 +150,7 @@ public class Fruit {
 			}
 		}
 		
-		return null;
+		System.out.println("didnt find another edge");
+		return prev;
 	}
 }

@@ -1,13 +1,9 @@
 package gameGUI;
-
 import java.util.ArrayList;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
 import gameClient.SimpleDB;
 import gameClient.Triple;
 
@@ -18,22 +14,19 @@ public class MyScoresGUI extends JFrame {
 	private final int X_RANGE = 800;
 	private final int Y_RANGE = 600;
 	
+	// Create table with data
+	private JTable table;
+	
 	Object[][] results;
 	
 	public MyScoresGUI() {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(X_RANGE, Y_RANGE);
 		
-        //headers for the table
+        // Headers for the table
         String[] columns = new String[] {
             "Num", "Id", "Level", "Score", "Moves", "Date"
-        };
-        
-        //create table with data
-        JTable table;
-         
-        //add the table to the frame
-        //this.add(new JScrollPane(table));
+        };     
          
         this.setTitle("Table Example");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       
@@ -48,7 +41,7 @@ public class MyScoresGUI extends JFrame {
 		if (selectedChoice != "My game stats") myGameFlag = false;
 		
 		if (myGameFlag) {
-			results = SimpleDB.printUserLog(YAHAV, DANIEL, false);
+			results = SimpleDB.printUserLog(YAHAV, DANIEL);
 			table = new JTable(results, columns);
 			this.add(new JScrollPane(table));
 		}

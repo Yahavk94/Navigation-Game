@@ -76,7 +76,6 @@ public class MyGameGUI extends JPanel {
 	private int totalGameScore = 0;
 
 	private int REFRESH = 103;
-	ResultSet resultSet;
 
 	// Game mode flags
 	private boolean autoMode = false;
@@ -93,7 +92,7 @@ public class MyGameGUI extends JPanel {
 		// Get level number
 		boolean vFlag = false;
 		while (!vFlag) {
-			String lNumber = JOptionPane.showInputDialog("Enter any level between 0 and 23");
+			String lNumber = JOptionPane.showInputDialog(null, "Enter any level between 0 and 23");
 			try {
 				int levelNumber = Integer.parseInt(lNumber);
 				if (!(levelNumber >= 0 && levelNumber < 24)) throw new RuntimeException();
@@ -178,22 +177,55 @@ public class MyGameGUI extends JPanel {
 				gameFruits = new ArrayList<>();
 				gameFruits = Automated.getGameFruits(gameFruits, gameGraph, myGame);
 
-				while (robotsCounter < robotsNum) {
+				while (robotsCounter < robotsNum && gameNumber != 16 && gameNumber != 23) {
 					Fruit bestFruit = Automated.getBestFruit(gameFruits);
 
 					// Choose the best location based on the greatest fruits values
-					int autoSrcNode;
-					if (bestFruit.getType() == 1)
-						autoSrcNode = bestFruit.getEdge().getSrc(); // Apple
-					else
-						autoSrcNode = bestFruit.getEdge().getDest(); // Banana
+					int autoSrcNode = bestFruit.getEdge().getSrc();
 					myGame.addRobot(autoSrcNode);
-
 					gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
+					
 					repaint();
 					robotsCounter++;
 				}
 
+				if (gameNumber == 16) {
+					robotsCounter = 0;
+					while (robotsCounter < robotsNum) {
+						Fruit bestFruit = Automated.getBestFruit(gameFruits);
+
+						// Choose the best location based on the greatest fruits values
+						int autoSrcNode = bestFruit.getEdge().getSrc();
+						myGame.addRobot(autoSrcNode);
+						gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
+						bestFruit = Automated.getBestFruit(gameFruits);
+						gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
+
+						repaint();
+						robotsCounter++;
+					}
+				}
+
+				if (gameNumber == 23) {
+					robotsCounter=0;
+					while (robotsCounter < robotsNum) {
+						Fruit bestFruit = Automated.getBestFruit(gameFruits);
+
+						// Choose the best location based on the greatest fruits values
+						int autoSrcNode = bestFruit.getEdge().getSrc();
+						myGame.addRobot(autoSrcNode);
+						gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
+
+						if (robotsCounter == 0) {
+							bestFruit = Automated.getBestFruit(gameFruits);
+							gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
+						}
+						
+						repaint();
+						robotsCounter++;
+					}
+				}
+				
 				myGame.startGame();
 				autoMoveMario.start();
 			}
@@ -203,9 +235,9 @@ public class MyGameGUI extends JPanel {
 			public void run() {
 				JSONObject getAutoGameScore;
 				long start = System.currentTimeMillis();
+				long refreshChange = System.currentTimeMillis();
 				int counter = 0;
 				while (myGame.isRunning()) {
-					//if (System.currentTimeMillis() - start > 30) {
 					try {
 						gameFruits.clear();
 						gameFruits = Automated.getGameFruits(gameFruits, gameGraph, myGame);
@@ -220,25 +252,28 @@ public class MyGameGUI extends JPanel {
 							int autoRobotSrc = autoGameRobot.getInt("src");
 							int autoRobotDest = autoGameRobot.getInt("dest");
 
-							if (gameNumber == 16 || gameNumber == 23) {
-								if(autoRobotDest!=-1)
-									autoRobotDest = Automated.getNextFruit(gameFruits, gameGraph, autoRobotDest, true);
-								else
-									autoRobotDest = Automated.getNextFruit(gameFruits, gameGraph, autoRobotSrc, false);
-								System.out.println(autoRobot);
-							}
-							else
+							if (gameNumber == 160) 
+								autoRobotDest = Automated.getNextFruit(gameFruits, gameGraph, autoRobotSrc);							
+							else							
 								autoRobotDest = Automated.getNext(gameFruits, gameGraph, autoRobotSrc);
-							
+
 							myGame.chooseNextEdge(robotSN, autoRobotDest);
 						}
 					} catch (Exception e) {
 						System.out.println("Exception");
+						e.printStackTrace();
 					}
 
 					if (gameNumber == 5) REFRESH = 120;
-					else if (gameNumber == 23) REFRESH = 53;
+					else if (gameNumber == 23) {
+						if (System.currentTimeMillis() - refreshChange > 100) {
+							int rand = (int)(Math.random() * 30);
+							REFRESH = 64 + rand;
+							refreshChange = System.currentTimeMillis();
+						}
+					}
 					
+					else if (gameNumber == 231) REFRESH = 65;
 					if (System.currentTimeMillis() - start > REFRESH) {
 						myGame.move();
 						counter++;
@@ -424,25 +459,26 @@ public class MyGameGUI extends JPanel {
 
 		// Game mode
 		if (!modeFlag) {
-			Object[] selectionChar = {"Mario", "Luigi"};
-			String initialChar = "Mario";
+			String firstChar = "Mario";
+			String secondChar = "Luigi";
+			Object[] charSelection = {firstChar, secondChar};
+			String initialChar = firstChar;
 			Object selectedChar = JOptionPane.showInputDialog(null, "Select character",
-					"Character", JOptionPane.QUESTION_MESSAGE, null, selectionChar, initialChar);
+					"Character", JOptionPane.QUESTION_MESSAGE, null, charSelection, initialChar);
 
-			ImageIcon icon;
-			if (selectedChar == "Mario") icon = new ImageIcon("Mario.png");
+			ImageIcon charIcon;
+			if (selectedChar == "Mario") charIcon = new ImageIcon("Mario.png");
 			else {
-				icon = new ImageIcon("Luigi.png");
+				charIcon = new ImageIcon("Luigi.png");
 				marioFlag = false;
 			}
 
-			Object[] selectionValues = {"Manual", "Automated"};
-			String initialSelection = "Automated";
-			Object gameMode = JOptionPane.showInputDialog(null, "Select game mode",
-					"Mode", JOptionPane.QUESTION_MESSAGE, icon, selectionValues, initialSelection);
+			Object[] modeSelection = {"Manual", "Automated"};
+			String initialMode = "Automated";
+			Object selectedMode = JOptionPane.showInputDialog(null, "Select game mode",
+					"Mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, initialMode);
 
-			if (gameMode == "Manual") autoMode = false;
-			else autoMode = true;
+			if (selectedMode != "Manual") autoMode = true;
 			modeFlag = true;
 		}
 

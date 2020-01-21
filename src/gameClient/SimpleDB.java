@@ -230,10 +230,9 @@ public class SimpleDB {
 		return -1;
 	}
 	
-	public static int getNumOfGames(int ID_1, int ID_2, boolean flag) {
+	public static int getNumOfGames(int ID_1, int ID_2) {
 		
 		int numOfGames = 0;
-		int total = 0;
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -251,10 +250,8 @@ public class SimpleDB {
 				
 				if(ID==ID_1||ID==ID_2) {
 					numOfGames ++;
-					total++;
 				}
 				
-				else total++;
 			}
 			
 			resultSet.close();
@@ -270,8 +267,7 @@ public class SimpleDB {
 			e.printStackTrace();
 		}
 		
-		if (!flag) return numOfGames;
-		else return total;
+		return numOfGames;
 	}
 }
 
