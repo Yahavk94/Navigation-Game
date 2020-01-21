@@ -1,10 +1,12 @@
 package gameGUI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import Server.game_service;
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
+import dataStructure.edge_data;
 import dataStructure.node_data;
 import gameData.Fruit;
 
@@ -83,14 +85,16 @@ public class Automated {
 			double rToFruitSrc = myGraph.shortestPathDist(srcNode, gameFruits.get(i).getEdge().getSrc());
 			double rToFruitDest = myGraph.shortestPathDist(srcNode, gameFruits.get(i).getEdge().getDest());
 			
+			double reduction = 1;
+			
 			if (gameFruits.get(i).getType() == -1) { // Banana
 				if (rToFruitDest == 0) {
-					if (gameFruits.get(i).getValue() / rToFruitSrc > maxProfit)
+					if (gameFruits.get(i).getValue()*reduction / rToFruitSrc > maxProfit)
 						return gameFruits.get(i).getEdge().getSrc(); // Collect banana from destination to source
 				}
 				
-				else if (gameFruits.get(i).getValue() / rToFruitDest > maxProfit) {
-					maxProfit = gameFruits.get(i).getValue() / rToFruitDest;
+				else if (gameFruits.get(i).getValue()*reduction  / rToFruitDest > maxProfit) {
+					maxProfit = gameFruits.get(i).getValue() *reduction / rToFruitDest;
 					nextNode = gameFruits.get(i).getEdge().getDest();
 					toRemove = i;
 				}
@@ -98,12 +102,12 @@ public class Automated {
 			
 			else if (gameFruits.get(i).getType() == 1) { // Apple
 				if (rToFruitSrc == 0) {
-					if (gameFruits.get(i).getValue() / rToFruitDest > maxProfit)
+					if (gameFruits.get(i).getValue()*reduction  / rToFruitDest > maxProfit)
 						return gameFruits.get(i).getEdge().getDest(); // Collect apple from source to destination
 				}
 				
-				else if (gameFruits.get(i).getValue() / rToFruitSrc > maxProfit) {
-					maxProfit = gameFruits.get(i).getValue() / rToFruitSrc;
+				else if (gameFruits.get(i).getValue()*reduction  / rToFruitSrc > maxProfit) {
+					maxProfit = gameFruits.get(i).getValue()*reduction  / rToFruitSrc;
 					nextNode = gameFruits.get(i).getEdge().getSrc();
 					toRemove = i;
 				}
@@ -114,5 +118,49 @@ public class Automated {
 		gameFruits.remove(toRemove);
 		List<node_data> greedyPath = myGraph.TSP(robotPath);
 		return greedyPath.get(1).getKey();
+	}
+	
+	public static int getNextFruit(ArrayList<Fruit> gameFruits, DGraph gameGraph, int srcNode, boolean dest) {
+		Graph_Algo myGraph = new Graph_Algo();
+		myGraph.init(gameGraph);
+		List<node_data> minPath = new ArrayList<>();
+		Fruit toDelete = null;
+		
+		double min = Double.MAX_VALUE;
+		for (Fruit fruit : gameFruits) {
+			if (fruit.getEdge().getSrc() == 32 && fruit.getEdge().getDest() == 33) {
+				continue;
+			}
+			
+			List<Integer> list = new ArrayList<>();
+			list.add(srcNode);
+			list.add(fruit.getEdge().getSrc());
+			list.add(fruit.getEdge().getDest());
+			
+			List<node_data> tspList = myGraph.TSP(list);
+			double sum = 0;
+			
+			Iterator<node_data> iter = tspList.iterator();
+			int source = iter.next().getKey();
+			
+			while (iter.hasNext()) {
+				int destination = iter.next().getKey();
+				edge_data edge = gameGraph.getEdge(source, destination);
+				sum += edge.getWeight();
+				source = destination;
+			}
+			
+			if (sum < min) {
+				min = sum;
+				minPath = tspList;
+				toDelete = fruit;
+			}
+		}
+		
+		gameFruits.remove(toDelete);
+		if(!dest)
+			return minPath.get(1).getKey();
+		else
+			return minPath.get(0).getKey();
 	}
 }

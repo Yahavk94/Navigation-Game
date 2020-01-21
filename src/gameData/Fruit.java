@@ -30,6 +30,8 @@ public class Fruit {
 		}
 		
 		this.fruitEdge = setEdge(gameGraph);
+		System.out.println(fruitEdge.getSrc());
+		System.out.println(fruitEdge.getDest());
 	}
 	
 	public int getType() {
@@ -61,7 +63,7 @@ public class Fruit {
 	}
 	
 	private edge_data setEdge(DGraph gameGraph) {
-		double epsilon = 0.000001;
+		double epsilon = 0.00001;
 		double edgeDist = 0;
 		double srcToFruitDist = 0, fruitToDestDist = 0, fruitDist = 0;
 		
@@ -81,7 +83,20 @@ public class Fruit {
 				fruitToDestDist = Math.sqrt(Math.pow(xFruitToDest, 2) + Math.pow(yFruitToDest, 2));
 				fruitDist = srcToFruitDist + fruitToDestDist;
 				
-				if (Math.abs(edgeDist - fruitDist) < epsilon) return eD;
+				boolean srcIsSmaller = false;
+				if (Math.abs(edgeDist - fruitDist) < epsilon) {
+					if (eD.getSrc() < eD.getDest()) srcIsSmaller = true;
+					
+					if (this.getType() == 1) {
+						if (srcIsSmaller) return eD;
+						return gameGraph.getEdge(eD.getDest(), eD.getSrc());
+					}
+					
+					else if (this.getType() == -1) {
+						if (srcIsSmaller) return gameGraph.getEdge(eD.getDest(), eD.getSrc());
+						 return eD;
+					}
+				}
 			}
 		}
 		

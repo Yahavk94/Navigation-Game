@@ -1,9 +1,18 @@
 package gameGUI;
 
+import javax.swing.JOptionPane;
+
 public class MainClass {
 
 	public static void main(String[] args) {
-		MyGameGUI gui = new MyGameGUI(15);
-		gui.createJFrame();
+		Object[] selectionMenu = {"Play", "Show scores"};
+		String initialChoice = "Play";
+		Object selectedChoice = JOptionPane.showInputDialog(null, "Choose",
+				"Main menu", JOptionPane.QUESTION_MESSAGE, null, selectionMenu, initialChoice);
+		
+		if (selectedChoice == "Play") MyGameGUI.createJFrame();
+		else {
+			MyScoresGUI scoresGui = new MyScoresGUI();
+		}
 	}
 }
