@@ -156,7 +156,7 @@ public class MyGameGUI extends JPanel {
 		gamePanel.add(moveButton);
 		gamePanel.add(Box.createHorizontalGlue());
 		this.add(gamePanel, BorderLayout.SOUTH);
-		backgroundImage = Toolkit.getDefaultToolkit().createImage("Background.jpg");
+		backgroundImage = Toolkit.getDefaultToolkit().createImage("data\\Background.jpg");
 		kml = new KML_Logger(gameNumber);
 		
 		// Manual game threads
@@ -203,7 +203,7 @@ public class MyGameGUI extends JPanel {
 				int mToKML = JOptionPane.showConfirmDialog(null, "Export to KML?", "Export", JOptionPane.YES_NO_OPTION);
 				if (mToKML == JOptionPane.YES_OPTION){
 					kml.closeDocument();
-					String remark = "data//kmlfiles/" +gameNumber;
+					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//kmlfiles/" +gameNumber;
 					myGame.sendKML(remark);
 					System.exit(0);
 				}
@@ -321,13 +321,13 @@ public class MyGameGUI extends JPanel {
 				}
 
 				ImageIcon gameOverIcon;
-				gameOverIcon = new ImageIcon("Gameover.png");
+				gameOverIcon = new ImageIcon("data\\Gameover.png");
 				JOptionPane.showMessageDialog(null, null, "", JOptionPane.PLAIN_MESSAGE, gameOverIcon);
 
 				int aToKML = JOptionPane.showConfirmDialog(null, "Export to KML?", "Export", JOptionPane.YES_NO_OPTION);
 				if (aToKML == JOptionPane.YES_OPTION){
 					kml.closeDocument();
-					String remark = "data//kmlfiles/" +gameNumber;
+					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//kmlfiles/" +gameNumber;
 					myGame.sendKML(remark);
 					System.exit(0);
 				}
@@ -356,13 +356,13 @@ public class MyGameGUI extends JPanel {
 
 		// Read fruits and robots images
 		try {
-			File appleFile = new File("Red.png");
+			File appleFile = new File("data\\Red.png");
 			appleImage = ImageIO.read(appleFile);
-			File bananaFile = new File("Yellow.png");
+			File bananaFile = new File("data\\Yellow.png");
 			bananaImage = ImageIO.read(bananaFile);
-			File marioFile = new File("Mario.png");
+			File marioFile = new File("data\\Mario.png");
 			marioImage = ImageIO.read(marioFile);
-			File luigiFile = new File("Luigi.png");
+			File luigiFile = new File("data\\Luigi.png");
 			luigiImage = ImageIO.read(luigiFile);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -506,9 +506,9 @@ public class MyGameGUI extends JPanel {
 					"Character", JOptionPane.QUESTION_MESSAGE, null, charSelection, "Mario");
 
 			ImageIcon charIcon;
-			if (selectedChar == "Mario") charIcon = new ImageIcon("Mario.png");
+			if (selectedChar == "Mario") charIcon = new ImageIcon("data\\Mario.png");
 			else {
-				charIcon = new ImageIcon("Luigi.png");
+				charIcon = new ImageIcon("data\\Luigi.png");
 				marioFlag = false;
 			}
 
