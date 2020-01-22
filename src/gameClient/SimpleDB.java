@@ -135,18 +135,15 @@ public class SimpleDB {
 			int i =0;
 			while(resultSet.next())
 			{
-				int ID=resultSet.getInt("UserID");
+				int ID = resultSet.getInt("UserID");
 				
-				if(ID==ID_1||ID==ID_2) {
-					//String data = "Id: " + ID +","+resultSet.getInt("levelID")+", score: "+resultSet.getInt("score")+","+resultSet.getInt("moves")+","+resultSet.getDate("time");
-					//gameData.add(data);
-					
+				if (ID==ID_1||ID==ID_2) {
 					gData[i][0] = "" +(i+1);
-					gData[i][1] = ""+ID;
-					gData[i][2] = ""+resultSet.getInt("levelID");
-					gData[i][3] = ""+resultSet.getInt("score");
-					gData[i][4] = ""+resultSet.getInt("moves");
-					gData[i][5] = ""+resultSet.getDate("time");
+					gData[i][1] = "" +ID;
+					gData[i][2] = "" +resultSet.getInt("levelID");
+					gData[i][3] = "" +resultSet.getInt("score");
+					gData[i][4] = "" +resultSet.getInt("moves");
+					gData[i][5] = "" +resultSet.getDate("time");
 					i++;
 				}
 			}

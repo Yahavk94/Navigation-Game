@@ -63,15 +63,6 @@ class Graph_AlgoTest {
 		assertEquals(7, dGraph.edgeSize());
 	}
 
-	/*@Test
-	void testInitString() {
-		fail("Not yet implemented");
-	}
-	@Test
-	void testSave() {
-		fail("Not yet implemented");
-	}*/
-
 	@Test
 	void testIsConnected() {
 		DGraph dG = new DGraph();
@@ -81,19 +72,21 @@ class Graph_AlgoTest {
 		dG.addNode(new Node(2));
 		dG.addNode(new Node(3));
 		dG.addNode(new Node(4));
-		dG.connect(1,2,2);
-		dG.connect(2,3,3);
-		dG.connect(3,4,4);
-		dG.connect(4,1,1);
-		dG.connect(2,4,4);
-		dG.connect(4,2,7);
+		
+		dG.connect(0,1,2);
+		dG.connect(1,2,3);
+		dG.connect(2,0,2);
+		dG.connect(1,3,4);
+		dG.connect(3,1,4);
+		dG.connect(3,4,1);
+		dG.connect(4,0,6);
 		
 		newGraph.init(dG); // Initialize newGraph using dG
 		
 		// New strongly connected graph has been created
 		assertTrue(newGraph.isConnected()); // Check connectivity
 		
-		dG.removeEdge(2,3); // newGraph is not strongly connected anymore
+		dG.removeEdge(4,0); // newGraph is not strongly connected anymore
 		assertFalse(newGraph.isConnected()); // Check connectivity
 	}
 

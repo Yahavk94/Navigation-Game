@@ -33,12 +33,12 @@ public class MyScoresGUI extends JFrame {
         this.pack();
         this.setVisible(true);
 		
-		Object[] selectionMenu = {"My game stats", "Global ranking"};
-		String initialChoice = "My game stats";
+		Object[] selectionMenu = {"Personal ranking", "Global ranking"};
+		String initialChoice = "Personal ranking";
 		Object selectedChoice = JOptionPane.showInputDialog(null, "Choose",
 				"Main menu", JOptionPane.QUESTION_MESSAGE, null, selectionMenu, initialChoice);
 		
-		if (selectedChoice != "My game stats") myGameFlag = false;
+		if (selectedChoice != "Personal ranking") myGameFlag = false;
 		
 		if (myGameFlag) {
 			results = SimpleDB.printUserLog(YAHAV, DANIEL);

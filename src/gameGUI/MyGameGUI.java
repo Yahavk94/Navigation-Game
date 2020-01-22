@@ -12,20 +12,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,36 +26,88 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import Server.Game_Server;
 import Server.game_service;
-import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
 import gameClient.KML_Logger;
-import gameClient.SimpleDB;
 import gameData.Fruit;
 import gameData.Robot;
 import utils.Point3D;
 
+/**
+ * The Maze of Waze is a simple game, in which the chosen character (Mario or Luigi) collect
+ red or yellow mushrooms with two optional game modes : Manual and Automatic.
+ 
+ ** Manual mode
+ In the manual mode, first you choose where to place the chosen character.
+ Depending on the level, you have to place one, two or three characters.
+ After setting up the board, the time starts running automatically.
+ In the top right corner, the remaining time is displayed.
+ Your objective is to collect as many points as possible before the time runs out.
+ To collect points, move the chosen character over the mushroom.
+ 
+ How to move the chosen character?
+ Press the Move button, at the top of the window.
+ Choose the ID of the character you would like to move (any chosen ID between 0 and 2).
+ Then, choose the node you want to move the character to.
+ The chosen node has to be an adjacent node to the one the character is currently standing on.
+ 
+ *** Important note
+ Red mushrooms are located on the edge from the node with the lower ID to the node with the higher ID (for example : 23 -> 34)
+ Yellow mushrooms are located on the edges directed from the higher ID node to lower ID node (for example : 31 -> 8)
+ Mushrooms have different values (points you get for collecting them).
+ Edges have length, i.e. time it takes to traverse the edge.
+ 
+ ** Automatic mode
+ In this mode we tried our best to automatically lead the characters on their way through the maze
+ to collect the highest possible amount of points.
+ We are aware of the fact that we have not reached an optimal solution, but here is a short explanation of 
+ our attempt : We placed the character(s) next to the fruits with the highest value.
+ Each character runs in its own thread, in which it calculates the "profit" for each mushroom, chooses the highest
+ profit mushroom and then moves it towards the found mushroom on the respective shortest path.
+ How do we calculate the "profit" : The profit is the ratio of value of the mushroom to distance to the mushroom.
+ The value is given and the distance is calculating by making use of the graph data structure and its algorithms
+ from previous projects.
+ After the character chooses its mushroom, it is made inaccessible to the other characters.
+ This is to prevent the other character to move towards the same target.
+ We know that this is not quite optimal since the same mushroom could bring a higher profit to another character,
+ but it is a step in the right direction.
+ * @author Yahav Karpel
+ * @author Daniel Korotine
+ */
+
 public class MyGameGUI extends JPanel {
+	private static final long serialVersionUID = 1L;
 	private game_service myGame;
 	private DGraph gameGraph = new DGraph();
-
+	
 	// Frame
 	private final int X_RANGE = 1200;
 	private final int Y_RANGE = 600;
 	private final int OFFSET = 100;
 	private JPanel gamePanel;
+	
+	// Game fields
+	private static int robotsNum = 0;
+	private static int robotsCounter = 0;
+	private int totalGameScore = 0;
+	
+	// Game mode flags
+	private boolean autoMode = false;
+	private boolean modeFlag = false;
 
 	// Manual game fields
 	private Thread manualMoveMario;
 	private Thread manualChooseLocation;
 	private JButton moveButton;
 
-	// Automated game fields
+	// Automatic game fields
 	private Thread autoChooseLocation;
 	private Thread autoMoveMario;
 	private ArrayList<Fruit> gameFruits;
-
+	private int REFRESH = 103;
+	private int movesNum = 0;
+	
 	// Icons
 	private BufferedImage appleImage;
 	private BufferedImage bananaImage;
@@ -71,30 +116,20 @@ public class MyGameGUI extends JPanel {
 	private Image backgroundImage;
 	private boolean marioFlag = true;
 
-	private static int robotsNum = 0;
-	private static int robotsCounter = 0;
-	private int totalGameScore = 0;
-
-	private int REFRESH = 103;
-
-	// Game mode flags
-	private boolean autoMode = false;
-	private boolean modeFlag = false;
-
 	// KML fields
 	private KML_Logger kml;
 	private boolean nodeJustOnce = false;
-
+	
 	public static void createJFrame() {
 		JFrame mainFrame = new JFrame("Th3 M4z3 0F W4z3");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		
 		// Get level number
 		boolean vFlag = false;
 		while (!vFlag) {
-			String lNumber = JOptionPane.showInputDialog(null, "Enter any level between 0 and 23");
+			String lvlNumber = JOptionPane.showInputDialog(null, "Enter any level between 0 and 23");
 			try {
-				int levelNumber = Integer.parseInt(lNumber);
+				int levelNumber = Integer.parseInt(lvlNumber);
 				if (!(levelNumber >= 0 && levelNumber < 24)) throw new RuntimeException();
 				mainFrame.add(new MyGameGUI(levelNumber));
 				vFlag = true;
@@ -117,7 +152,7 @@ public class MyGameGUI extends JPanel {
 		this.add(gamePanel, BorderLayout.SOUTH);
 		backgroundImage = Toolkit.getDefaultToolkit().createImage("Background.jpg");
 		kml = new KML_Logger(gameNumber);
-
+		
 		// Manual game threads
 		manualChooseLocation = new Thread() {
 			public void run() {
@@ -171,7 +206,7 @@ public class MyGameGUI extends JPanel {
 			}
 		};
 
-		// Automated game threads
+		// Automatic game threads
 		autoChooseLocation = new Thread() {
 			public void run() {
 				gameFruits = new ArrayList<>();
@@ -194,7 +229,7 @@ public class MyGameGUI extends JPanel {
 					while (robotsCounter < robotsNum) {
 						Fruit bestFruit = Automated.getBestFruit(gameFruits);
 
-						// Choose the best location based on the greatest fruits values
+						// Choose the best location
 						int autoSrcNode = bestFruit.getEdge().getSrc();
 						myGame.addRobot(autoSrcNode);
 						gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
@@ -207,11 +242,11 @@ public class MyGameGUI extends JPanel {
 				}
 
 				if (gameNumber == 23) {
-					robotsCounter=0;
+					robotsCounter = 0;
 					while (robotsCounter < robotsNum) {
 						Fruit bestFruit = Automated.getBestFruit(gameFruits);
 
-						// Choose the best location based on the greatest fruits values
+						// Choose the best location
 						int autoSrcNode = bestFruit.getEdge().getSrc();
 						myGame.addRobot(autoSrcNode);
 						gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
@@ -236,7 +271,6 @@ public class MyGameGUI extends JPanel {
 				JSONObject getAutoGameScore;
 				long start = System.currentTimeMillis();
 				long refreshChange = System.currentTimeMillis();
-				int counter = 0;
 				while (myGame.isRunning()) {
 					try {
 						gameFruits.clear();
@@ -251,14 +285,11 @@ public class MyGameGUI extends JPanel {
 							int robotSN = autoGameRobot.getInt("id");
 							int autoRobotSrc = autoGameRobot.getInt("src");
 							int autoRobotDest = autoGameRobot.getInt("dest");
-
-							if (gameNumber == 160) 
-								autoRobotDest = Automated.getNextFruit(gameFruits, gameGraph, autoRobotSrc);							
-							else							
-								autoRobotDest = Automated.getNext(gameFruits, gameGraph, autoRobotSrc);
-
+					
+							autoRobotDest = Automated.getNext(gameFruits, gameGraph, autoRobotSrc);
 							myGame.chooseNextEdge(robotSN, autoRobotDest);
 						}
+						
 					} catch (Exception e) {
 						System.out.println("Exception");
 						e.printStackTrace();
@@ -274,15 +305,14 @@ public class MyGameGUI extends JPanel {
 					}
 					
 					else if (gameNumber == 231) REFRESH = 65;
+					
 					if (System.currentTimeMillis() - start > REFRESH) {
 						myGame.move();
-						counter++;
+						movesNum++;
 						start = System.currentTimeMillis();
 						repaint();
 					}
 				}
-
-				System.out.println("counter = "+counter);
 
 				ImageIcon gameOverIcon;
 				gameOverIcon = new ImageIcon("Gameover.png");
@@ -299,9 +329,10 @@ public class MyGameGUI extends JPanel {
 				else System.exit(0);
 			}
 		};
-
-		String id = JOptionPane.showInputDialog("Enter id number");
-		Game_Server.login(Integer.parseInt(id));
+		
+		// Server login
+		String idNumber = JOptionPane.showInputDialog("Enter ID number");
+		Game_Server.login(Integer.parseInt(idNumber));
 
 		// Initialize gameGraph
 		myGame = Game_Server.getServer(gameNumber);
@@ -336,9 +367,9 @@ public class MyGameGUI extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean vFlag = true;
-				String rNumber = JOptionPane.showInputDialog("Enter robot serial number");
+				String robNumber = JOptionPane.showInputDialog("Enter robot serial number");
 				try {
-					int robotNumber = Integer.parseInt(rNumber);
+					int robotNumber = Integer.parseInt(robNumber);
 					if (robotNumber < 0) throw new RuntimeException();
 					if (robotNumber >= robotsNum) throw new RuntimeException();
 				} catch (Exception Ex) {
@@ -351,7 +382,7 @@ public class MyGameGUI extends JPanel {
 					try {
 						int destinationNode = Integer.parseInt(destNode);
 						if (gameGraph.getNode(destinationNode) == null) throw new RuntimeException();
-						myGame.chooseNextEdge(Integer.parseInt(rNumber), destinationNode);
+						myGame.chooseNextEdge(Integer.parseInt(robNumber), destinationNode);
 					} catch (Exception Ex) {
 						JOptionPane.showMessageDialog(null, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
 					}
@@ -359,6 +390,10 @@ public class MyGameGUI extends JPanel {
 			}
 		});
 	}
+	
+	/**
+	 * This class paints our game, depends on our current level and characters move.
+	 */
 
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -456,15 +491,13 @@ public class MyGameGUI extends JPanel {
 		g.drawString("Remaining time : " +timeLeft, X_RANGE - 150, 20);
 		g.setColor(Color.BLACK);
 		g.drawString("Total game score : " +totalGameScore, X_RANGE - 1190, 20);
+		g.drawString("Moves : " +movesNum, X_RANGE - 1190, 40);
 
 		// Game mode
 		if (!modeFlag) {
-			String firstChar = "Mario";
-			String secondChar = "Luigi";
-			Object[] charSelection = {firstChar, secondChar};
-			String initialChar = firstChar;
+			Object[] charSelection = {"Mario", "Luigi"};
 			Object selectedChar = JOptionPane.showInputDialog(null, "Select character",
-					"Character", JOptionPane.QUESTION_MESSAGE, null, charSelection, initialChar);
+					"Character", JOptionPane.QUESTION_MESSAGE, null, charSelection, "Mario");
 
 			ImageIcon charIcon;
 			if (selectedChar == "Mario") charIcon = new ImageIcon("Mario.png");
@@ -474,9 +507,8 @@ public class MyGameGUI extends JPanel {
 			}
 
 			Object[] modeSelection = {"Manual", "Automated"};
-			String initialMode = "Automated";
 			Object selectedMode = JOptionPane.showInputDialog(null, "Select game mode",
-					"Mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, initialMode);
+					"Mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automated");
 
 			if (selectedMode != "Manual") autoMode = true;
 			modeFlag = true;
