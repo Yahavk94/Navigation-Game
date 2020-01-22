@@ -3,6 +3,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import utils.Point3D;
 
+/**
+ * This class represents the "robot", the character that collects the fruits in the game
+ * 
+ * 
+ * @author Daniel Korotine & Yahav Karpel
+ *
+ */
+
 public class Robot {
 	private int robotId;
 	private double robotValue;
@@ -10,6 +18,12 @@ public class Robot {
 	private int destNode;
 	private double robotSpeed;
 	private Point3D robotPos;
+	
+	/**
+	 * constructor
+	 * builds a "robot" with JSON string that is retrieved from Game_Server object(from jar)
+	 * @param JSONString
+	 */
 	
 	public Robot(String JSONString) {
 		JSONString = JSONString.substring(9, JSONString.length() - 1);

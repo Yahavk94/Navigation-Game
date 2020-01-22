@@ -1,13 +1,17 @@
 package gameGUI;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import Server.game_service;
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
-import dataStructure.edge_data;
 import dataStructure.node_data;
 import gameData.Fruit;
+
+/**
+ * This class represents the automatic game functions the automatic robots are going to use during the game.
+ * @author yahav
+ *
+ */
 
 public class Automated {
 	

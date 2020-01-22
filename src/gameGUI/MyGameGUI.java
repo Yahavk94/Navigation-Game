@@ -33,9 +33,10 @@ import gameClient.KML_Logger;
 import gameData.Fruit;
 import gameData.Robot;
 import utils.Point3D;
+import utils.Scaling;
 
 /**
- * The Maze of Waze is a simple game, in which the chosen character (Mario or Luigi) collect
+ * The Maze of Waze is a simple game, in which the chosen character (Mario or Luigi) collects
  red or yellow mushrooms with two optional game modes : Manual and Automatic.
  
  ** Manual mode
@@ -48,8 +49,8 @@ import utils.Point3D;
  
  How to move the chosen character?
  Press the Move button, at the top of the window.
- Choose the ID of the character you would like to move (any chosen ID between 0 and 2).
- Then, choose the node you want to move the character to.
+ Choose the ID of the character you would like to move (chosen ID between 0-2).
+ Then, choose the node you would like to move the character to.
  The chosen node has to be an adjacent node to the one the character is currently standing on.
  
  *** Important note
@@ -62,8 +63,8 @@ import utils.Point3D;
  In this mode we tried our best to automatically lead the characters on their way through the maze
  to collect the highest possible amount of points.
  We are aware of the fact that we have not reached an optimal solution, but here is a short explanation of 
- our attempt : We placed the character(s) next to the fruits with the highest value.
- Each character runs in its own thread, in which it calculates the "profit" for each mushroom, chooses the highest
+ our attempt : We placed the character(s) next to the fruits with the greatest value.
+ Each character runs in its own thread, in which it calculates the "profit" for each mushroom, chooses the greatest
  profit mushroom and then moves it towards the found mushroom on the respective shortest path.
  How do we calculate the "profit" : The profit is the ratio of value of the mushroom to distance to the mushroom.
  The value is given and the distance is calculating by making use of the graph data structure and its algorithms
@@ -142,7 +143,12 @@ public class MyGameGUI extends JPanel {
 		mainFrame.setVisible(true);
 		mainFrame.setLocationRelativeTo(null);
 	}
-
+	
+	/**
+	 * This constructor creates the main frame and the game itself.
+	 * @param gameNumber
+	 */
+	
 	public MyGameGUI(int gameNumber) {
 		gamePanel = new JPanel();
 		gamePanel.setPreferredSize(new Dimension(X_RANGE, Y_RANGE));
@@ -392,7 +398,7 @@ public class MyGameGUI extends JPanel {
 	}
 	
 	/**
-	 * This class paints our game, depends on our current level and characters move.
+	 * This class paints the game, depends on the current level and characters move.
 	 */
 
 	public void paint(Graphics g) {
@@ -402,10 +408,10 @@ public class MyGameGUI extends JPanel {
 
 		// For scaling
 		Collection<node_data> nodesCol = gameGraph.getV();
-		double minX = getMinX(nodesCol);
-		double maxX = getMaxX(nodesCol);
-		double minY = getMinY(nodesCol);
-		double maxY = getMaxY(nodesCol);
+		double minX = Scaling.getMinX(nodesCol);
+		double maxX = Scaling.getMaxX(nodesCol);
+		double minY = Scaling.getMinY(nodesCol);
+		double maxY = Scaling.getMaxY(nodesCol);
 		double invertedSrc, invertedDest;
 
 		// Black edges drawl
@@ -417,10 +423,10 @@ public class MyGameGUI extends JPanel {
 				Point3D destLocation = dest.getLocation();
 				g.setColor(Color.BLACK);
 
-				double scaledX = scale(srcLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
-				double scaledY = scale(srcLocation.y(), minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
-				double scaledXDest = scale(destLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
-				double scaledYDest = scale(destLocation.y(), minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
+				double scaledX = Scaling.scale(srcLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
+				double scaledY = Scaling.scale(srcLocation.y(), minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
+				double scaledXDest = Scaling.scale(destLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
+				double scaledYDest = Scaling.scale(destLocation.y(), minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
 				invertedSrc = Y_RANGE - scaledY;
 				invertedDest = Y_RANGE - scaledYDest;
 
@@ -433,8 +439,8 @@ public class MyGameGUI extends JPanel {
 		for (node_data node : nodesCol) {
 			Point3D nodeLocation = node.getLocation();
 			g.setColor(Color.RED);
-			double scaledX = scale(nodeLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
-			double scaledY = scale(nodeLocation.y() ,minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
+			double scaledX = Scaling.scale(nodeLocation.x(), minX, maxX, OFFSET, (double)X_RANGE - OFFSET);
+			double scaledY = Scaling.scale(nodeLocation.y() ,minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
 			invertedSrc = Y_RANGE - scaledY;
 			g.fillOval((int)scaledX, (int)invertedSrc, 10, 10);
 			g.drawString("" +node.getKey(), (int)scaledX, (int)invertedSrc - 5);
@@ -452,8 +458,8 @@ public class MyGameGUI extends JPanel {
 			Point3D fruitLocation = newFruit.getPos();
 			double fruitX = fruitLocation.x();
 			double fruitY = fruitLocation.y();
-			fruitX = scale(fruitX, minX, maxX, OFFSET, X_RANGE - OFFSET);
-			fruitY = scale(fruitY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
+			fruitX = Scaling.scale(fruitX, minX, maxX, OFFSET, X_RANGE - OFFSET);
+			fruitY = Scaling.scale(fruitY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			invertedDest = Y_RANGE - fruitY;
 
 			if (newFruit.getType() == 1)
@@ -471,8 +477,8 @@ public class MyGameGUI extends JPanel {
 			Point3D robotLocation = newRobot.getPos();
 			double robotX = robotLocation.x();
 			double robotY = robotLocation.y();
-			robotX = scale(robotX, minX, maxX, OFFSET, X_RANGE - OFFSET);
-			robotY = scale(robotY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
+			robotX = Scaling.scale(robotX, minX, maxX, OFFSET, X_RANGE - OFFSET);
+			robotY = Scaling.scale(robotY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			invertedDest = Y_RANGE - robotY;
 
 			if (marioFlag)
@@ -506,9 +512,9 @@ public class MyGameGUI extends JPanel {
 				marioFlag = false;
 			}
 
-			Object[] modeSelection = {"Manual", "Automated"};
+			Object[] modeSelection = {"Manual", "Automatic"};
 			Object selectedMode = JOptionPane.showInputDialog(null, "Select game mode",
-					"Mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automated");
+					"Mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automatic");
 
 			if (selectedMode != "Manual") autoMode = true;
 			modeFlag = true;
@@ -523,64 +529,5 @@ public class MyGameGUI extends JPanel {
 			if (!autoChooseLocation.isAlive() && !autoMoveMario.isAlive())
 				autoChooseLocation.start();
 		}
-	}
-
-	/**
-	 * 
-	 * @param data denote some data to be scaled
-	 * @param r_min the minimum of the range of your data
-	 * @param r_max the maximum of the range of your data
-	 * @param t_min the minimum of the range of your desired target scaling
-	 * @param t_max the maximum of the range of your desired target scaling
-	 * @return
-	 */
-
-	private double scale(double data, double r_min, double r_max, double t_min, double t_max) {
-		double res = ((data - r_min) / (r_max-r_min)) * (t_max - t_min) + t_min;
-		return res;
-	}
-
-	private double getMinX(Collection<node_data> nodes) {
-		double min = Double.MAX_VALUE;
-		for (node_data node : nodes) {
-			double temp = node.getLocation().x();
-			if (temp < min)
-				min = temp;
-		}
-
-		return min;
-	}
-
-	private double getMinY(Collection<node_data> nodes) {
-		double min = Double.MAX_VALUE;
-		for (node_data node : nodes) {
-			double temp = node.getLocation().y();
-			if (temp < min)
-				min = temp;
-		}
-
-		return min;
-	}
-
-	private double getMaxX(Collection<node_data> nodes) {
-		double max = Double.MIN_VALUE;
-		for (node_data node : nodes) {
-			double temp = node.getLocation().x();
-			if (temp > max)
-				max = temp;
-		}
-
-		return max;
-	}
-
-	private double getMaxY(Collection<node_data> nodes) {
-		double max = Double.MIN_VALUE;
-		for (node_data node : nodes) {
-			double temp = node.getLocation().y();
-			if (temp > max)
-				max = temp;
-		}
-
-		return max;
 	}
 }
