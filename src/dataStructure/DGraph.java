@@ -3,22 +3,30 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import gameData.Fruit;
 import utils.Point3D;
 
+/**
+ * This class represents a directed graph data structure.
+ * @author Yahav Karpel and Daniel Korotine.
+ */
+
 public class DGraph implements graph, Serializable {
+	private static final long serialVersionUID = 1L;
 	private HashMap<Integer, node_data> gNode;
 	private HashMap<Integer, HashMap<Integer, edge_data>> gEdge;
 
 	private int numNodes = 0;
 	private int numEdges = 0;
 	private int MC = 0;
-
+	
+	/**
+	 * Constructor
+	 * This method initializes an empty DGraph data structure.
+	 */
+	
 	public DGraph() {
 		this.gNode = new HashMap<Integer, node_data>();
 		this.gEdge = new HashMap<Integer, HashMap<Integer, edge_data>>();
@@ -126,12 +134,7 @@ public class DGraph implements graph, Serializable {
 	}
 	
 	/**
-	 * Add fruit to the edge if contains any fruit
-	 * @param myFruit
-	 */
-	
-	/**
-	 * Init DGraph from JSON string
+	 * Initializes a graph with JSON string that is retrieved from Game_Server object (from jar).
 	 * @param JSONString
 	 */
 	

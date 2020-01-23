@@ -4,6 +4,7 @@ import java.io.Serializable;
 import gameData.Fruit;
 
 public class Edge implements edge_data, Serializable {
+	private static final long serialVersionUID = 1L;
 	private int srcNode;
 	private int destNode;
 	private double edgeWeight;

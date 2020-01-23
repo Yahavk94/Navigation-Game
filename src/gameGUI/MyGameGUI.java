@@ -73,8 +73,7 @@ import utils.Scaling;
  This is to prevent the other character to move towards the same target.
  We know that this is not quite optimal since the same mushroom could bring a higher profit to another character,
  but it is a step in the right direction.
- * @author Yahav Karpel
- * @author Daniel Korotine
+ * @author Yahav Karpel & Daniel Korotine.
  */
 
 public class MyGameGUI extends JPanel {

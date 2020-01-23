@@ -8,15 +8,14 @@ import dataStructure.node_data;
 import gameData.Fruit;
 
 /**
- * This class represents the automatic game functions the automatic robots are going to use during the game.
- * @author yahav
- *
+ * This class represents the automatic game functions which are going to be used during the game.
+ * @author Daniel Korotine & Yahav Karpel
  */
 
 public class Automated {
 	
 	/**
-	 * Update gameFruits ArrayList during the automatic game
+	 * Update gameFruits ArrayList during the automatic game.
 	 * @param gameFruits
 	 * @param gameGraph
 	 * @param myGame
@@ -32,7 +31,7 @@ public class Automated {
 	}
 	
 	/**
-	 * Find and return the fruit with the greatest value
+	 * Find and return the greatest valued fruit.
 	 * @param gameFruits
 	 * @param myGame
 	 * @return bestFruit
@@ -48,7 +47,7 @@ public class Automated {
 	}
 	
 	/**
-	 * Remove from gameFruits ArrayList the fruit with the greatest value
+	 * Remove the fruit with the greatest value from gameFruits ArrayList.
 	 * @param gameFruits
 	 * @param myGame
 	 * @param delFruit
@@ -67,7 +66,7 @@ public class Automated {
 	}
 	
 	/**
-	 * Find the next node for a specified robot
+	 * Find the next node for a specified robot.
 	 * @param gameFruits
 	 * @param gameGraph
 	 * @param myGame

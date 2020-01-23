@@ -4,6 +4,7 @@ import java.io.Serializable;
 import utils.Point3D;
 
 public class Node implements node_data, Serializable, Comparable<Object> {
+	private static final long serialVersionUID = 1L;
 	private int nodeKey;
 	private Point3D nodeLocation;
 	private double nodeWeight;

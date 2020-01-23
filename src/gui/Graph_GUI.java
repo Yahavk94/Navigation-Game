@@ -9,17 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileFilter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.Node;
@@ -29,6 +23,7 @@ import dataStructure.node_data;
 import utils.Point3D;
 
 public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
+	private static final long serialVersionUID = 1L;
 	private Graph_Algo myGraph = new Graph_Algo();
 
 	public Graph_GUI(Graph_Algo myGraph) {

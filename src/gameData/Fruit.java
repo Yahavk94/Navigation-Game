@@ -8,8 +8,8 @@ import dataStructure.node_data;
 import utils.Point3D;
 
 /**
- * This class represents a fruit given from the game server.
- *
+ * This class represents the fruit which are collected by the robots in the game.
+ * @author Daniel Korotine & Yahav Karpel
  */
 
 public class Fruit {
@@ -17,6 +17,14 @@ public class Fruit {
 	private double fruitValue;
 	private Point3D fruitPos;
 	private edge_data fruitEdge;
+	
+	/**
+	 * Constructor
+	 * Builds a fruit with JSON string that is retrieved from Game_Server object (from jar)
+	 * and sets its edge based on the given graph.
+	 * @param JSONString
+	 * @param gameGraph
+	 */
 	
 	public Fruit(String JSONString, DGraph gameGraph) {
 		JSONObject getFruit;
@@ -66,11 +74,11 @@ public class Fruit {
 	}
 	
 	/**
-	 * Given gameGraph, this private function calculates and returns the edge our fruit is located on.
-	 Using distance formula, if the margin is smaller than epsilon it means the fruit is located on that
-	 current edge.
+	 * Private function
+	 * This private function calculates and returns the edge our fruit is located on.
+	 Using distance formula, the fruits is located on that edge if the margin between the fruit and the
+	 specified edge is smaller than a very small number (epsilon).
 	 * @param gameGraph
-	 * @return
 	 */
 	
 	private edge_data setEdge(DGraph gameGraph) {
@@ -98,12 +106,12 @@ public class Fruit {
 				if (Math.abs(edgeDist - fruitDist) < epsilon) {
 					if (eD.getSrc() < eD.getDest()) srcIsSmaller = true;
 					
-					if (this.getType() == 1) {
+					if (this.getType() == 1) { // Apple
 						if (srcIsSmaller) return eD;
 						return gameGraph.getEdge(eD.getDest(), eD.getSrc());
 					}
 					
-					else if (this.getType() == -1) {
+					else if (this.getType() == -1) { // Banana
 						if (srcIsSmaller) return gameGraph.getEdge(eD.getDest(), eD.getSrc());
 						 return eD;
 					}

@@ -10,13 +10,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Stack;
-
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
 
+/**
+ * This class implements graph_algorithms interface and represents Graph Theory algorithms.
+ * @author Yahav Karpel and Daniel Korotine.
+ */
+
 public class Graph_Algo implements graph_algorithms, Serializable {
+	private static final long serialVersionUID = 1L;
 	private DGraph graphAlgo;
 
 	public Graph_Algo() {

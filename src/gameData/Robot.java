@@ -4,11 +4,8 @@ import org.json.JSONObject;
 import utils.Point3D;
 
 /**
- * This class represents the "robot", the character that collects the fruits in the game
- * 
- * 
+ * This class represents the robot, the character that collects the fruits in the game.
  * @author Daniel Korotine & Yahav Karpel
- *
  */
 
 public class Robot {
@@ -20,8 +17,8 @@ public class Robot {
 	private Point3D robotPos;
 	
 	/**
-	 * constructor
-	 * builds a "robot" with JSON string that is retrieved from Game_Server object(from jar)
+	 * Constructor
+	 * Builds a robot with JSON string that is retrieved from Game_Server object (from jar).
 	 * @param JSONString
 	 */
 	
