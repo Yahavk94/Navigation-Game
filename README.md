@@ -4,7 +4,7 @@
 _This project is a simple game, in which you control one or more robots and try to collect as many points as possible._
 _Save to KML as if you wish._
 
-![image](https://user-images.githubusercontent.com/58428493/72688025-3a2e9880-3b0c-11ea-924b-f74179493765.png)
+![image](https://user-images.githubusercontent.com/58428493/73015739-4032bb00-3e25-11ea-9b59-c121089ca61b.png)
 
 ### Installation
 
