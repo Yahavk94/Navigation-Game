@@ -97,13 +97,13 @@ public class MyGameGUI extends JPanel {
 	private boolean modeFlag = false;
 
 	// Manual game fields
-	private Thread manualMoveMario;
+	private Thread manualMoveCharacter;
 	private Thread manualChooseLocation;
 	private JButton moveButton;
 
 	// Automatic game fields
 	private Thread autoChooseLocation;
-	private Thread autoMoveMario;
+	private Thread autoMoveCharacter;
 	private ArrayList<Fruit> gameFruits;
 	private int REFRESH = 103;
 	private int movesNum = 0;
@@ -117,8 +117,13 @@ public class MyGameGUI extends JPanel {
 	private boolean marioFlag = true;
 
 	// KML fields
-	private KML_Logger kml;
+	private KML_Logger kmlLogger;
 	private boolean nodeJustOnce = false;
+	
+	/**
+	 * This method creates the main JFrame and runs the game on a JPanel to avoid flickering.
+	 * Note that createJFrame method should be called from the main class.
+	 */
 	
 	public static void createJFrame() {
 		JFrame mainFrame = new JFrame("Th3 M4z3 0F W4z3");
@@ -130,7 +135,8 @@ public class MyGameGUI extends JPanel {
 			String lvlNumber = JOptionPane.showInputDialog(null, "Enter any level between 0 and 23");
 			try {
 				int levelNumber = Integer.parseInt(lvlNumber);
-				if (!(levelNumber >= 0 && levelNumber < 24)) throw new RuntimeException();
+				if (levelNumber > 23) throw new RuntimeException();
+				if (levelNumber < 0 && levelNumber != -31) throw new RuntimeException();
 				mainFrame.add(new MyGameGUI(levelNumber));
 				vFlag = true;
 			} catch (Exception Ex) {
@@ -144,11 +150,11 @@ public class MyGameGUI extends JPanel {
 	}
 	
 	/**
-	 * This constructor creates the main frame and the game itself.
+	 * This constructor creates the game panel.
 	 * @param gameNumber
 	 */
 	
-	public MyGameGUI(int gameNumber) {
+	private MyGameGUI(int gameNumber) {
 		gamePanel = new JPanel();
 		gamePanel.setPreferredSize(new Dimension(X_RANGE, Y_RANGE));
 		moveButton = new JButton("Move");
@@ -156,7 +162,7 @@ public class MyGameGUI extends JPanel {
 		gamePanel.add(Box.createHorizontalGlue());
 		this.add(gamePanel, BorderLayout.SOUTH);
 		backgroundImage = Toolkit.getDefaultToolkit().createImage("data\\Background.jpg");
-		kml = new KML_Logger(gameNumber);
+		kmlLogger = new KML_Logger(gameNumber);
 		
 		// Manual game threads
 		manualChooseLocation = new Thread() {
@@ -175,11 +181,11 @@ public class MyGameGUI extends JPanel {
 				}
 
 				myGame.startGame();
-				manualMoveMario.start();
+				manualMoveCharacter.start();
 			}
 		};
 
-		manualMoveMario = new Thread() {
+		manualMoveCharacter = new Thread() {
 			public void run() {
 				JSONObject getManualGameScore;
 				long start = System.currentTimeMillis();
@@ -200,8 +206,8 @@ public class MyGameGUI extends JPanel {
 				}
 
 				int mToKML = JOptionPane.showConfirmDialog(null, "Export to KML?", "Export", JOptionPane.YES_NO_OPTION);
-				if (mToKML == JOptionPane.YES_OPTION){
-					kml.closeDocument();
+				if (mToKML == JOptionPane.YES_OPTION) {
+					kmlLogger.closeDocument();
 					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//kmlfiles/" +gameNumber;
 					myGame.sendKML(remark);
 					System.exit(0);
@@ -267,11 +273,11 @@ public class MyGameGUI extends JPanel {
 				}
 				
 				myGame.startGame();
-				autoMoveMario.start();
+				autoMoveCharacter.start();
 			}
 		};
 
-		autoMoveMario = new Thread() {
+		autoMoveCharacter = new Thread() {
 			public void run() {
 				JSONObject getAutoGameScore;
 				long start = System.currentTimeMillis();
@@ -299,17 +305,16 @@ public class MyGameGUI extends JPanel {
 						System.out.println("Exception");
 						e.printStackTrace();
 					}
-
-					if (gameNumber == 5) REFRESH = 120;
+					
+					if (gameNumber == -31) REFRESH = 10;
+					else if (gameNumber == 5) REFRESH = 120;
 					else if (gameNumber == 23) {
 						if (System.currentTimeMillis() - refreshChange > 100) {
 							int rand = (int)(Math.random() * 30);
 							REFRESH = 64 + rand;
 							refreshChange = System.currentTimeMillis();
-						}
+						} 
 					}
-					
-					else if (gameNumber == 231) REFRESH = 65;
 					
 					if (System.currentTimeMillis() - start > REFRESH) {
 						myGame.move();
@@ -324,8 +329,8 @@ public class MyGameGUI extends JPanel {
 				JOptionPane.showMessageDialog(null, null, "", JOptionPane.PLAIN_MESSAGE, gameOverIcon);
 
 				int aToKML = JOptionPane.showConfirmDialog(null, "Export to KML?", "Export", JOptionPane.YES_NO_OPTION);
-				if (aToKML == JOptionPane.YES_OPTION){
-					kml.closeDocument();
+				if (aToKML == JOptionPane.YES_OPTION) {
+					kmlLogger.closeDocument();
 					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//kmlfiles/" +gameNumber;
 					myGame.sendKML(remark);
 					System.exit(0);
@@ -397,7 +402,7 @@ public class MyGameGUI extends JPanel {
 	}
 	
 	/**
-	 * This class paints the game, depends on the current level and characters move.
+	 * This method paints the game, depends on the current level and characters move.
 	 */
 
 	public void paint(Graphics g) {
@@ -443,9 +448,9 @@ public class MyGameGUI extends JPanel {
 			invertedSrc = Y_RANGE - scaledY;
 			g.fillOval((int)scaledX, (int)invertedSrc, 10, 10);
 			g.drawString("" +node.getKey(), (int)scaledX, (int)invertedSrc - 5);
-
+			
 			if (!nodeJustOnce)
-				kml.addNodePlaceMark(node.getLocation().toString());
+				kmlLogger.addNodePlaceMark(node.getLocation().toString());
 		}
 
 		nodeJustOnce = true; // Export nodes to KML just once
@@ -460,13 +465,13 @@ public class MyGameGUI extends JPanel {
 			fruitX = Scaling.scale(fruitX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			fruitY = Scaling.scale(fruitY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			invertedDest = Y_RANGE - fruitY;
-
+			
 			if (newFruit.getType() == 1)
 				g.drawImage(appleImage, (int)fruitX - 5, (int)invertedDest - 5, 20, 20, this);
 			else
 				g.drawImage(bananaImage, (int)fruitX - 5, (int)invertedDest - 5, 20, 20, this);
-
-			kml.addFruitPlaceMark(newFruit.getType(), newFruit.getPos().toString());
+			
+			kmlLogger.addFruitPlaceMark(newFruit.getType(), newFruit.getPos().toString());
 		}
 
 		// Robots drawl
@@ -479,16 +484,16 @@ public class MyGameGUI extends JPanel {
 			robotX = Scaling.scale(robotX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			robotY = Scaling.scale(robotY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			invertedDest = Y_RANGE - robotY;
-
+			
 			if (marioFlag)
 				g.drawImage(marioImage, (int)robotX - 20, (int)invertedDest - 20, 40, 60, this);
 			else
 				g.drawImage(luigiImage, (int)robotX - 20, (int)invertedDest - 20, 50, 60, this);
-
-			kml.addRobotPlaceMark(newRobot.getPos().toString());
+			
+			kmlLogger.addRobotPlaceMark(newRobot.getPos().toString());
 		}
 
-		// Remaining time and total score drawl
+		// Remaining time, total score and moves number drawl
 		g.setFont(new Font("Comic Sans MS", Font.BOLD, 15));
 		g.setColor(Color.BLACK);
 		long timeLeft = myGame.timeToEnd() / 1000;
@@ -513,19 +518,19 @@ public class MyGameGUI extends JPanel {
 
 			Object[] modeSelection = {"Manual", "Automatic"};
 			Object selectedMode = JOptionPane.showInputDialog(null, "Select game mode",
-					"Mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automatic");
+					"Game mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automatic");
 
 			if (selectedMode != "Manual") autoMode = true;
 			modeFlag = true;
 		}
 
 		if (!autoMode) {
-			if (!manualChooseLocation.isAlive() && !manualMoveMario.isAlive())
+			if (!manualChooseLocation.isAlive() && !manualMoveCharacter.isAlive())
 				manualChooseLocation.start();
 		}
 
 		else {
-			if (!autoChooseLocation.isAlive() && !autoMoveMario.isAlive())
+			if (!autoChooseLocation.isAlive() && !autoMoveCharacter.isAlive())
 				autoChooseLocation.start();
 		}
 	}

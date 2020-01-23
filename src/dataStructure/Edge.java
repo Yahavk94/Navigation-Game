@@ -1,7 +1,10 @@
 package dataStructure;
 import java.io.Serializable;
 
-import gameData.Fruit;
+/**
+ * This class represents an edge of a directed graph by it's source node, destination node, weight, info and tag.
+ * @author Yahav Karpel and Daniel Korotine.
+ */
 
 public class Edge implements edge_data, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -10,10 +13,11 @@ public class Edge implements edge_data, Serializable {
 	private double edgeWeight;
 	private String edgeInfo;
 	private int edgeTag;
-	private Fruit fruit;
-	private boolean hasFruit;
 	
-	public Edge() {}
+	/**
+	 * Constructor
+	 * This method constructs an edge by a given source node, destination node and weight.
+	 */
 	
 	public Edge(int srcNode, int destNode, double edgeWeight) {
 		this.srcNode = srcNode;
@@ -54,21 +58,5 @@ public class Edge implements edge_data, Serializable {
 	@Override
 	public void setTag(int t) {
 		this.edgeTag = t;
-	}
-	
-	public boolean getHasFruit() {
-		return this.hasFruit;
-	}
-	
-	public void setHasFruit(boolean hasFruit) {
-		this.hasFruit = hasFruit;
-	}
-	
-	public Fruit getFruit() {
-		return this.fruit;
-	}
-	
-	public void setFruit(Fruit fruit) {
-		this.fruit = fruit;
 	}
 }

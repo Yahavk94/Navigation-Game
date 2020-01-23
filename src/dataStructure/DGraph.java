@@ -10,6 +10,8 @@ import utils.Point3D;
 
 /**
  * This class represents a directed graph data structure.
+ * DGraph class contains 5 private field where two of them are HashMaps used to store the nodes and edges, while
+ * the others are used to count nodes number, edges number and number of changes made in the graph.
  * @author Yahav Karpel and Daniel Korotine.
  */
 
@@ -31,18 +33,32 @@ public class DGraph implements graph, Serializable {
 		this.gNode = new HashMap<Integer, node_data>();
 		this.gEdge = new HashMap<Integer, HashMap<Integer, edge_data>>();
 	}
-
+	
+	/**
+	 * This method returns the node at the given unique key.
+	 * Note that null would be returned in case of nonexistence.
+	 */
+	
 	@Override
 	public node_data getNode(int key) {
 		return this.gNode.get(key);
 	}
-
+	
+	/**
+	 * This method returns the edge between source and destination nodes.
+	 * Note that null would be returned in case of nonexistence.
+	 */
+	
 	@Override
 	public edge_data getEdge(int src, int dest) {
 		if (this.gEdge.containsKey(src)) return this.gEdge.get(src).get(dest);
 		return null;
 	}
-
+	
+	/**
+	 * This method adds a given node in case of key nonexistence in the nodes HashMap.
+	 */
+	
 	@Override
 	public void addNode(node_data n) {
 		if (!this.gNode.containsKey(n.getKey())) {
@@ -51,7 +67,12 @@ public class DGraph implements graph, Serializable {
 			this.MC++;
 		}
 	}
-
+	
+	/**
+	 * This method connects an edge between source and destination nodes, given it's weight.
+	 * Note that an exception would be thrown in case of nodes nonexistence.
+	 */
+	
 	@Override
 	public void connect(int src, int dest, double w) {
 		if (this.gNode.containsKey(src) && this.gNode.containsKey(dest)) { // Check nodes existence
@@ -72,17 +93,31 @@ public class DGraph implements graph, Serializable {
 		else
 			throw new RuntimeException("ERR! Unable to connect since nodes are nonexist");
 	}
+	
+	/**
+	 * This method returns a collection of nodes the HashMap contains.
+	 */
 
 	@Override
 	public Collection<node_data> getV() {
 		return this.gNode.values();
 	}
-
+	
+	/**
+	 * This method returns a collection of edges connected to a given node id.
+	 */
+	
 	@Override
 	public Collection<edge_data> getE(int node_id) {
 		if (this.gEdge.containsKey(node_id)) return this.gEdge.get(node_id).values();
 		return null;
 	}
+	
+	/**
+	 * This method removes and returns a node and the edges connected to that specific node, given it's
+	 * unique key.
+	 * Note that null would be returned in case of nonexistence.
+	 */
 
 	@Override
 	public node_data removeNode(int key) {
@@ -104,7 +139,12 @@ public class DGraph implements graph, Serializable {
 		
 		return null; // Specified node doesn't exist
 	}
-
+	
+	/**
+	 * This method removes and returns an edge given it's source and destination nodes unique keys.
+	 * Note that null would be returned in case of nonexistence.
+	 */
+	
 	@Override
 	public edge_data removeEdge(int src, int dest) {
 		if (this.gEdge.containsKey(src)) {
@@ -117,24 +157,37 @@ public class DGraph implements graph, Serializable {
 		
 		return null;
 	}
-
+	
+	/**
+	 * This method returns the nodes number in the graph.
+	 */
+	
 	@Override
 	public int nodeSize() {
 		return this.numNodes;
 	}
+	
+	/**
+	 * This method returns the edges number in the graph.
+	 */
 
 	@Override
 	public int edgeSize() {
 		return this.numEdges;
 	}
-
+	
+	/**
+	 * This method returns the number of changes made during addition, removal and connection.
+	 */
+	
 	@Override
 	public int getMC() {
 		return this.MC;
 	}
 	
 	/**
-	 * Initializes a graph with JSON string that is retrieved from Game_Server object (from jar).
+	 * This function initializes a graph with JSON string that is retrieved from Game_Server
+	 * object (from jar).
 	 * @param JSONString
 	 */
 	

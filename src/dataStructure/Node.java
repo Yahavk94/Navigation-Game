@@ -1,7 +1,11 @@
 package dataStructure;
 import java.io.Serializable;
-
 import utils.Point3D;
+
+/**
+ * This class represents a node of a directed graph by it's key, location, weight, info and tag.
+ * @author Yahav Karpel and Daniel Korotine.
+ */
 
 public class Node implements node_data, Serializable, Comparable<Object> {
 	private static final long serialVersionUID = 1L;
@@ -11,17 +15,24 @@ public class Node implements node_data, Serializable, Comparable<Object> {
 	private String nodeInfo;
 	private int nodeTag;
 	
-	public Node() {}
+	/**
+	 * Constructor
+	 * This method constructs a node by a given key.
+	 * @param nodeKey
+	 */
 	
 	public Node(int nodeKey) {
 		this.nodeKey = nodeKey;
-		double randomNum = Math.random();
-		double x = (randomNum + 0.1) * 480;
-		randomNum = Math.random();
-		double y = (randomNum + 0.3) * 410;
-		Point3D p3D = new Point3D(x,y);
-		this.nodeLocation = p3D;
 	}
+	
+	/**
+	 * Constructor
+	 * This method constructs a node by a given key and x and y parameters to set it's location.
+	 * @param nodeKey
+	 * @param nodeWeight
+	 * @param x
+	 * @param y
+	 */
 	
 	public Node(int nodeKey, double nodeWeight, double x, double y) {
 		this.nodeKey = nodeKey;
@@ -30,10 +41,25 @@ public class Node implements node_data, Serializable, Comparable<Object> {
 		this.nodeLocation = p3D;
 	}
 	
+	/**
+	 * Constructor
+	 * This method constructs a node by a given key and a Point3D object to set it's location.
+	 * @param nodeKey
+	 * @param nodeLocation
+	 */
+	
 	public Node(int nodeKey, Point3D nodeLocation) {
 		this.nodeKey = nodeKey;
 		this.nodeLocation = nodeLocation;
 	}
+	
+	/**
+	 * Constructor
+	 * This method constructs a node by a given key, weight and a Point3D object to set it's location.
+	 * @param nodeKey
+	 * @param nodeWeight
+	 * @param nodeLocation
+	 */
 	
 	public Node(int nodeKey, double nodeWeight, Point3D nodeLocation) {
 		this.nodeKey = nodeKey;
@@ -85,6 +111,11 @@ public class Node implements node_data, Serializable, Comparable<Object> {
 	public void setTag(int t) {
 		this.nodeTag = t;
 	}
+	
+	/**
+	 * (Later on) Using priority queue in Dijkstra's algorithm (shortestPathDist) to compare between the 
+	 * elements in it.
+	 */
 
 	@Override
 	public int compareTo(Object o) {

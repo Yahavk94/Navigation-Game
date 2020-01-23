@@ -22,6 +22,11 @@ import dataStructure.graph;
 import dataStructure.node_data;
 import utils.Point3D;
 
+/**
+ * This GUI draws a directed graph based on previous class methods we have already implemented.
+ * @author Yahav Karpel and Daniel Korotine.
+ */
+
 public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private Graph_Algo myGraph = new Graph_Algo();
@@ -88,6 +93,10 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 		menuOption3.add(item10);
 		this.addMouseListener(this);
 	}
+	
+	/**
+	 * This method paints the graph.
+	 */
 
 	public void paint(Graphics graphDrawer) {
 		super.paint(graphDrawer);
@@ -140,7 +149,7 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 	public void actionPerformed(ActionEvent e) {
 		String strCommand = e.getActionCommand();
 		
-		if (strCommand.equals("Init")) { // Load graph by text
+		if (strCommand.equals("Init")) { // Load a graph by text
 			String graphFileName = JOptionPane.showInputDialog("Enter file name");
 			try {
 				myGraph.init(graphFileName);
@@ -372,6 +381,10 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("mouseClicked");
 	}
+	
+	/**
+	 * This method adds a node by pressing the mouse at any chosen location.
+	 */
 
 	@Override
 	public void mousePressed(MouseEvent e) {

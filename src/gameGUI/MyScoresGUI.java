@@ -11,7 +11,6 @@ import gameClient.Triple;
  * This class represents the game score menu which allows the user to choose between 3 different ranking 
  * options : Personal ranking, global ranking and our highest scores.
  * @author Yahav Karpel & Daniel Korotine
- *
  */
 
 public class MyScoresGUI extends JFrame {
@@ -21,13 +20,13 @@ public class MyScoresGUI extends JFrame {
 	private final int X_RANGE = 800;
 	private final int Y_RANGE = 600;
 	
-	// Create table with data
+	// Create table
 	private JTable scoresTable;
 	Object[][] gameResults;
 	
 	/**
 	 * Constructor
-	 * Builds a ranking table based on the chosen ranking option.
+	 * this method constructs a ranking table based on the chosen ranking option.
 	 */
 	
 	public MyScoresGUI() {
@@ -35,19 +34,25 @@ public class MyScoresGUI extends JFrame {
 		this.setSize(X_RANGE, Y_RANGE);
         this.setTitle("Game scores");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.pack();
         String[] tableColumns = new String[] {"Num", "ID", "Level", "Score", "Moves", "Date"};
-        //this.setVisible(true);
-		
 		Object[] selectionMenu = {"Personal ranking", "Global ranking", "Our high scores"};
-		String initialChoice = "Personal ranking";
 		Object selectedChoice = JOptionPane.showInputDialog(null, "Choose",
-				"Main menu", JOptionPane.QUESTION_MESSAGE, null, selectionMenu, initialChoice);
+				"Main menu", JOptionPane.QUESTION_MESSAGE, null, selectionMenu, "Personal ranking");
 		
 		if (selectedChoice == "Personal ranking") {
 			gameResults = SimpleDB.printUserLog(YAHAV, DANIEL);
 			scoresTable = new JTable(gameResults, tableColumns);
 			this.add(new JScrollPane(scoresTable));
+		}
+		
+		else if (selectedChoice == "Global ranking") {
+			Object[] stageSelection = {"0", "1", "3", "5", "9", "11", "13", "16", "19", "20", "23"};
+			String initialStage = "0";
+			Object selectedStage = JOptionPane.showInputDialog(null, "Choose",
+					"Main menu", JOptionPane.QUESTION_MESSAGE, null, stageSelection, initialStage);
+			
+			ArrayList<Triple> arr = SimpleDB.getRankingForLevel(Integer.parseInt((String) selectedStage));
+			JOptionPane.showMessageDialog(this, "Ranking in class for level " +selectedStage + " : " +SimpleDB.ourRanking(arr, YAHAV, DANIEL, Integer.parseInt((String) selectedStage)));
 		}
 		
 		else if (selectedChoice == "Our high scores") {
@@ -68,21 +73,8 @@ public class MyScoresGUI extends JFrame {
 			scoresTable = new JTable(arrObj, ourHighScoresColumns);
 			this.add(new JScrollPane(scoresTable));
 		}
-		
-		else if (selectedChoice == "Global ranking") {
-			Object[] stageSelection = {"0", "1", "3", "5", "9", "11", "13", "16", "19", "20", "23"};
-			String initialStage = "0";
-			Object selectedStage = JOptionPane.showInputDialog(null, "Choose",
-					"Main menu", JOptionPane.QUESTION_MESSAGE, null, stageSelection, initialStage);
-			
-			
-			ArrayList<Triple> arr = SimpleDB.getRankingForLevel(Integer.parseInt((String) selectedStage));
-			JOptionPane.showMessageDialog(this, "Ranking in class for level " + selectedStage + " : " + SimpleDB.ourRanking(arr, YAHAV, DANIEL, Integer.parseInt((String) selectedStage)));
-			
-		}
 
 		this.pack();
-		this.setVisible(true);
 		this.setLocationRelativeTo(null);
 	}
 }

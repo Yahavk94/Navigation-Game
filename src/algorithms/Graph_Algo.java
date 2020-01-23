@@ -16,22 +16,43 @@ import dataStructure.graph;
 import dataStructure.node_data;
 
 /**
- * This class implements graph_algorithms interface and represents Graph Theory algorithms.
+ * This class defines a DGraph field and operates one of the following methods on a directed graph.
+ * 1. init - init a directed graph with a graph parameter or a file.
+ * 2. save - save the graph to a file.
+ * 3. copy - compute a deep copy of this graph.
+ * 4. isConnected - returns true if and only if there is a valid path from EVREY node to each
+ * other node.
+ * 5. shortestPathDist - returns the length of the shortest path between src to dest.
+ * 6. shortestPath - returns the shortest path between src to dest, as an ordered list of nodes.
+ * 7. TSP - computes a relatively short path which visit each node in the targets list.
  * @author Yahav Karpel and Daniel Korotine.
  */
 
 public class Graph_Algo implements graph_algorithms, Serializable {
 	private static final long serialVersionUID = 1L;
 	private DGraph graphAlgo;
-
+	
+	/**
+	 * Constructor
+	 * This method creates an empty DGraph data structure.
+	 */
+	
 	public Graph_Algo() {
 		this.graphAlgo = new DGraph();
 	}
+	
+	/**
+	 * This method initializes the directed graph with a given graph values.
+	 */
 
 	@Override
 	public void init(graph g) {
 		this.graphAlgo = (DGraph)g;
 	}
+	
+	/**
+	 * This method initializes the directed graph from a file.
+	 */
 
 	@Override
 	public void init(String file_name) {
@@ -44,7 +65,11 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			throw new RuntimeException("File not found");
 		}
 	}
-
+	
+	/**
+	 * This method saves the directed graph to a file.
+	 */
+	
 	@Override
 	public void save(String file_name) {
 		try {    
@@ -57,7 +82,12 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * This method check whether a directed graph is strongly connected using graph's transpose
+	 * and DFS private methods.
+	 */
+	
 	@Override
 	public boolean isConnected() {
 		if (this.graphAlgo.nodeSize() == 0) return true; // Base case
@@ -83,7 +113,12 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 
 		return true;
 	}
-
+	
+	/**
+	 * This method returns the shortest path distance between any two nodes in a given graph, starting
+	 * from any node using Dijkstra's algorithm.
+	 */
+	
 	@Override
 	public double shortestPathDist(int src, int dest) { // Dijkstra
 		node_data startNode = this.graphAlgo.getNode(src);
@@ -120,7 +155,12 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 
 		return this.graphAlgo.getNode(dest).getWeight();
 	}
-
+	
+	/**
+	 * This method returns a LinkedList represents the shortest path between chosen nodes, using
+	 * Dijkstra's algorithm (shortestPathDist).
+	 */
+	
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
 		if (this.shortestPathDist(src, dest) == Double.POSITIVE_INFINITY) // Check path nonexistence
@@ -145,7 +185,12 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 
 		return newPathNodes;
 	}
-
+	
+	/**
+	 * This method returns a list represents the path between the nodes in the given targets list.
+	 * Note that null would be returned in case the graph is not strongly connected.
+	 */
+	
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
 		if (targets.isEmpty()) return null; // Target list is empty
@@ -172,7 +217,11 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 
 		return nodesPath;
 	}
-
+	
+	/**
+	 * This method returns a deep copy of graphAlgo's field.
+	 */
+	
 	@Override
 	public graph copy() {
 		DGraph dGraph = new DGraph();
@@ -192,7 +241,16 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	}
 
 	/* -------------------- Private functions -------------------- */
-
+	
+	/**
+	 * Given any graph, this private method operates an iterative DFS.
+	 * One of the parameters is a boolean array, which indicates whether it's index (refers to a node number)
+	 * is already discovered during the procedure.
+	 * Using iterative DFS might prevent stack overflow (In case of a very large graph).
+	 * @param dGraph
+	 * @param dNodes
+	 */
+	
 	private void iterativeDFS(DGraph dGraph, boolean[] dNodes) {
 		Stack<Integer> nodeStack = new Stack<>();
 		nodeStack.push(0); // Push the source node into the stack
@@ -213,6 +271,11 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			}
 		}
 	}
+	
+	/**
+	 * This private method returns graphAlgo's tranposed graph.
+	 * @return transposedGraph
+	 */
 
 	private DGraph getTranspose() {
 		DGraph tGraph = new DGraph();

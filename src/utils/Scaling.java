@@ -5,13 +5,12 @@ import dataStructure.node_data;
 /**
  * This class is for scaling calculation purposes.
  * @author Daniel Korotine & Yahav Karpel
- *
  */
 
 public class Scaling {
 	
 	/**
-	 * this function scales values according to given ranges.
+	 * This function scales values according to given ranges.
 	 * @param data denote some data to be scaled
 	 * @param r_min the minimum of the range of your data
 	 * @param r_max the maximum of the range of your data
@@ -26,70 +25,70 @@ public class Scaling {
 	}
 
 	/**
-	 * get minimum x value of all nodes in graph
+	 * Get minimum x value of all nodes in graph.
 	 * @param nodes list of nodes in graph
 	 * @return	min x value
 	 */
 	
 	public static double getMinX(Collection<node_data> nodes) {
 		double min = Double.MAX_VALUE;
-
-		for(node_data node : nodes) {
+		for (node_data node : nodes) {
 			double temp = node.getLocation().x();
-			if(temp<min)
-				min=temp;
+			if (temp < min)
+				min = temp;
 		}
+		
 		return min;
 	}
 	
 	/**
-	 * get minimum y value of all nodes in graph
+	 * Get minimum y value of all nodes in graph.
 	 * @param nodes list of nodes in graph
 	 * @return	min y value
 	 */
 	
 	public static double getMinY(Collection<node_data> nodes) {
 		double min = Double.MAX_VALUE;
-
-		for(node_data node : nodes) {
+		for (node_data node : nodes) {
 			double temp = node.getLocation().y();
-			if(temp<min)
-				min=temp;
+			if (temp < min)
+				min = temp;
 		}
+		
 		return min;
 	}
 	
 	/**
-	 * get maximum x value of all nodes in graph
+	 * Get maximum x value of all nodes in graph.
 	 * @param nodes list of nodes in graph
 	 * @return	max x value
 	 */
 	
 	public static double getMaxX(Collection<node_data> nodes) {
 		double max = Double.MIN_VALUE;
-
-		for(node_data node : nodes) {
+		for (node_data node : nodes) {
 			double temp = node.getLocation().x();
-			if(temp>max)
-				max=temp;
+			if (temp > max)
+				max = temp;
 		}
+		
 		return max;
 	}
 	
 	/**
-	 * get maximum y value of all nodes in graph
+	 * Get maximum y value of all nodes in graph.
 	 * @param nodes list of nodes in graph
 	 * @return	max y value
 	 */
 	
 	public static double getMaxY(Collection<node_data> nodes) {
 		double max = Double.MIN_VALUE;
-
-		for(node_data node : nodes) {
+		for (node_data node : nodes) {
 			double temp = node.getLocation().y();
-			if(temp>max)
-				max=temp;
+			if (temp > max)
+				max = temp;
 		}
+		
 		return max;
 	}
 }

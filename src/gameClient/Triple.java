@@ -1,18 +1,16 @@
 package gameClient;
 
 /**
- * This class represents a simple data structure with 3 integers as fields.
- * 1. ID of student
- * 2. score of student
- * 3. moves 
+ * This class represents a simple data structure with 3 integers as fields : ID of student, score of student and
+ * moves.
  * This class serves the single purposes of retrieving a ranking list from the data base.
- * @author Daniel Korotine & Yahav Karpel
- *
+ * @author Daniel Korotine and Yahav Karpel.
  */
 
 public class Triple implements Comparable<Triple>{
-	
-	private int ID, score, moves;
+	private int ID;
+	private int score;
+	private int moves;
 	
 	/**
 	 * Constructor
@@ -28,18 +26,17 @@ public class Triple implements Comparable<Triple>{
 	}
 
 	/**
-	 * retrieves ID of student
+	 * Retrieves ID of student.
 	 * @return
 	 */
 	
 	public int getID() {
-		return ID;
+		return this.ID;
 	}
-
+	
 	/**
-	 * set ID 
-	 * shouldn't be used
-	 * @param iD ID of student
+	 * Set ID (shouldn't be used).
+	 * @param ID of student
 	 */
 	
 	public void setID(int iD) {
@@ -47,17 +44,16 @@ public class Triple implements Comparable<Triple>{
 	}
 
 	/**
-	 * retrieves score
+	 * Retrieves score.
 	 * @return score
 	 */
 	
 	public int getScore() {
-		return score;
+		return this.score;
 	}
 
 	/**
-	 * sets the score.
-	 * shouldn't be used
+	 * Sets the score (shouldn't be used).
 	 * @param score
 	 */
 	
@@ -71,22 +67,23 @@ public class Triple implements Comparable<Triple>{
 	
 	@Override
 	public int compareTo(Triple o) {
-		if(this.getScore()<o.getScore())
+		if (this.getScore() < o.getScore())
 			return 1;
-		else if(this.getScore()>o.getScore())
+		else if (this.getScore() > o.getScore())
 			return -1;
 		return 0;
 	}
+	
 	/**
-	 * override of tostring function.
+	 * Override of tostring function.
 	 */
 	
 	public String toString() {
-		return "ID: "+this.getID()+", score: "+this.getScore()+", moves: "+this.getMoves();
+		return "ID : " +this.getID() + ", score : " +this.getScore() + ", moves : " +this.getMoves();
 	}
-
+	
 	/**
-	 * retrieves amount of moves
+	 * Retrieves amount of moves
 	 * @return amount of moves
 	 */
 	

@@ -74,10 +74,9 @@ public class Fruit {
 	}
 	
 	/**
-	 * Private function
-	 * This private function calculates and returns the edge our fruit is located on.
-	 Using distance formula, the fruits is located on that edge if the margin between the fruit and the
-	 specified edge is smaller than a very small number (epsilon).
+	 * Given any fruit, this private function calculates and returns the edge its located on.
+	 Using distance formula, the fruit is located on that edge if the margin between the fruit and the
+	 specified edge is smaller than a very small defined number (epsilon).
 	 * @param gameGraph
 	 */
 	
