@@ -22,7 +22,7 @@ public class DGraph implements graph, Serializable {
 
 	private int numNodes = 0;
 	private int numEdges = 0;
-	private int MC = 0;
+	private int modeCounter = 0;
 	
 	/**
 	 * Constructor
@@ -64,7 +64,7 @@ public class DGraph implements graph, Serializable {
 		if (!this.gNode.containsKey(n.getKey())) {
 			this.gNode.put(n.getKey(), n);
 			this.numNodes++;
-			this.MC++;
+			this.modeCounter++;
 		}
 	}
 	
@@ -86,7 +86,7 @@ public class DGraph implements graph, Serializable {
 					this.gEdge.get(src).put(dest, new Edge(src, dest, w));
 				
 				this.numEdges++;
-				this.MC++;
+				this.modeCounter++;
 			}
 		}
 
@@ -134,7 +134,7 @@ public class DGraph implements graph, Serializable {
 			
 			this.gNode.remove(key); // Remove specified node
 			this.numNodes--;
-			this.MC++;
+			this.modeCounter++;
 		}
 		
 		return null; // Specified node doesn't exist
@@ -150,7 +150,7 @@ public class DGraph implements graph, Serializable {
 		if (this.gEdge.containsKey(src)) {
 			if (this.gEdge.get(src).containsKey(dest)) { // Check specified edge existence
 				this.numEdges--;
-				this.MC++;
+				this.modeCounter++;
 				return this.gEdge.get(src).remove(dest);
 			}
 		}
@@ -182,7 +182,7 @@ public class DGraph implements graph, Serializable {
 	
 	@Override
 	public int getMC() {
-		return this.MC;
+		return this.modeCounter;
 	}
 	
 	/**

@@ -46,14 +46,14 @@ public class SimpleDB {
 			ResultSet resultSet = statement.executeQuery(allCustomersQuery);
 
 			while (resultSet.next())
-				System.out.println("Id: " +resultSet.getInt("UserID") + "," +resultSet.getInt("levelID") + "," +resultSet.getInt("moves") + "," +resultSet.getDate("time"));
+				System.out.println("Id: " +resultSet.getInt("UserID") + "," + resultSet.getInt("levelID") + "," + resultSet.getInt("moves") + "," + resultSet.getDate("time"));
 
 			resultSet.close();
 			statement.close();		
 			connection.close();
 		} catch (SQLException sqle) {
-			System.out.println("SQLException: " +sqle.getMessage());
-			System.out.println("Vendor Error: " +sqle.getErrorCode());
+			System.out.println("SQLException: " + sqle.getMessage());
+			System.out.println("Vendor Error: " + sqle.getErrorCode());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -68,7 +68,7 @@ public class SimpleDB {
 
 	public static String getKML(int id, int level) {
 		String ans = null;
-		String allCustomersQuery = "SELECT * FROM Users where userID = " +id + ";";
+		String allCustomersQuery = "SELECT * FROM Users where userID = " + id + ";";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection = 
@@ -76,7 +76,7 @@ public class SimpleDB {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(allCustomersQuery);
 			if (resultSet != null && resultSet.next())
-				ans = resultSet.getString("kml_" +level);
+				ans = resultSet.getString("kml_" + level);
 		} catch (SQLException sqle) {
 			System.out.println("SQLException: " + sqle.getMessage());
 			System.out.println("Vendor Error: " + sqle.getErrorCode());
@@ -97,7 +97,7 @@ public class SimpleDB {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(allCustomersQuery);
 			while (resultSet.next()) {
-				System.out.println("Id: " +resultSet.getInt("UserID"));
+				System.out.println("Id: " + resultSet.getInt("UserID"));
 				ans++;
 			}
 
@@ -138,12 +138,12 @@ public class SimpleDB {
 				int ID = resultSet.getInt("UserID");
 
 				if (ID == ID_1 || ID == ID_2) {
-					gData[i][0] = "" +(i+1);
-					gData[i][1] = "" +ID;
-					gData[i][2] = "" +resultSet.getInt("levelID");
-					gData[i][3] = "" +resultSet.getInt("score");
-					gData[i][4] = "" +resultSet.getInt("moves");
-					gData[i][5] = "" +resultSet.getDate("time");
+					gData[i][0] = "" + (i + 1);
+					gData[i][1] = "" + ID;
+					gData[i][2] = "" + resultSet.getInt("levelID");
+					gData[i][3] = "" + resultSet.getInt("score");
+					gData[i][4] = "" + resultSet.getInt("moves");
+					gData[i][5] = "" + resultSet.getDate("time");
 					i++;
 				}
 			}
@@ -153,8 +153,8 @@ public class SimpleDB {
 			connection.close();	
 
 		} catch (SQLException sqle) {
-			System.out.println("SQLException: " +sqle.getMessage());
-			System.out.println("Vendor Error: " +sqle.getErrorCode());
+			System.out.println("SQLException: " + sqle.getMessage());
+			System.out.println("Vendor Error: " + sqle.getErrorCode());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -249,8 +249,8 @@ public class SimpleDB {
 			statement.close();		
 			connection.close();		
 		} catch (SQLException sqle) {
-			System.out.println("SQLException: " +sqle.getMessage());
-			System.out.println("Vendor Error: " +sqle.getErrorCode());
+			System.out.println("SQLException: " + sqle.getMessage());
+			System.out.println("Vendor Error: " + sqle.getErrorCode());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -368,7 +368,7 @@ public class SimpleDB {
 					maxIndex = idx;
 				}
 			}
-			
+
 			++idx;
 		}
 
@@ -405,7 +405,7 @@ public class SimpleDB {
 
 		return highestScores;
 	}
-	
+
 	/**
 	 * Find highest score for specific level from student1 or student2.
 	 * @param ranking rank list
@@ -414,7 +414,7 @@ public class SimpleDB {
 	 * @param level
 	 * @return
 	 */
-	
+
 	public static int ourHighestScore(ArrayList<Triple> ranking, int id1, int id2) {
 		for (Triple triple : ranking) {
 			if (triple.getID() == id1 || triple.getID() == id2)

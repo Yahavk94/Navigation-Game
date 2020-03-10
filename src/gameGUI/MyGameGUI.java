@@ -38,7 +38,7 @@ import utils.Scaling;
 /**
  * The Maze of Waze is a simple game, in which the chosen character (Mario or Luigi) collects
  red or yellow mushrooms with two optional game modes : Manual and Automatic.
- 
+
  ** Manual mode
  In the manual mode, first you choose where to place the chosen character.
  Depending on the level, you have to place one, two or three characters.
@@ -46,19 +46,21 @@ import utils.Scaling;
  In the top right corner, the remaining time is displayed.
  Your objective is to collect as many points as possible before the time runs out.
  To collect points, move the chosen character over the mushroom.
- 
+
  How to move the chosen character?
  Press the Move button, at the top of the window.
  Choose the ID of the character you would like to move (chosen ID between 0-2).
  Then, choose the node you would like to move the character to.
  The chosen node has to be an adjacent node to the one the character is currently standing on.
- 
+
  *** Important note
- Red mushrooms are located on the edge from the node with the lower ID to the node with the higher ID (for example : 23 -> 34)
- Yellow mushrooms are located on the edges directed from the higher ID node to lower ID node (for example : 31 -> 8)
+ Red mushrooms are located on the edge from the node with the smaller ID to the node with the greater ID
+ (for example 23 to 34).
+ Yellow mushrooms are located on the edges directed from the greater ID node to smaller ID node
+ (for example 31 to 8).
  Mushrooms have different values (points you get for collecting them).
  Edges have length, i.e. time it takes to traverse the edge.
- 
+
  ** Automatic mode
  In this mode we tried our best to automatically lead the characters on their way through the maze
  to collect the highest possible amount of points.
@@ -80,18 +82,18 @@ public class MyGameGUI extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private game_service myGame;
 	private DGraph gameGraph = new DGraph();
-	
+
 	// Frame
 	private final int X_RANGE = 1200;
 	private final int Y_RANGE = 600;
 	private final int OFFSET = 100;
 	private JPanel gamePanel;
-	
+
 	// Game fields
 	private static int robotsNum = 0;
 	private static int robotsCounter = 0;
 	private int totalGameScore = 0;
-	
+
 	// Game mode flags
 	private boolean autoMode = false;
 	private boolean modeFlag = false;
@@ -107,7 +109,7 @@ public class MyGameGUI extends JPanel {
 	private ArrayList<Fruit> gameFruits;
 	private int REFRESH = 103;
 	private int movesNum = 0;
-	
+
 	// Icons
 	private BufferedImage appleImage;
 	private BufferedImage bananaImage;
@@ -119,16 +121,16 @@ public class MyGameGUI extends JPanel {
 	// KML fields
 	private KML_Logger kmlLogger;
 	private boolean nodeJustOnce = false;
-	
+
 	/**
-	 * This method creates the main JFrame and runs the game on a JPanel to avoid flickering.
+	 * This method creates the main frame and runs the game on a JPanel to avoid flickering.
 	 * Note that createJFrame method should be called from the main class.
 	 */
-	
+
 	public static void createJFrame() {
-		JFrame mainFrame = new JFrame("Th3 M4z3 0F W4z3");
+		JFrame mainFrame = new JFrame("The Maze of Waze");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		// Get level number
 		boolean vFlag = false;
 		while (!vFlag) {
@@ -148,12 +150,12 @@ public class MyGameGUI extends JPanel {
 		mainFrame.setVisible(true);
 		mainFrame.setLocationRelativeTo(null);
 	}
-	
+
 	/**
 	 * This constructor creates the game panel.
 	 * @param gameNumber
 	 */
-	
+
 	private MyGameGUI(int gameNumber) {
 		gamePanel = new JPanel();
 		gamePanel.setPreferredSize(new Dimension(X_RANGE, Y_RANGE));
@@ -161,9 +163,9 @@ public class MyGameGUI extends JPanel {
 		gamePanel.add(moveButton);
 		gamePanel.add(Box.createHorizontalGlue());
 		this.add(gamePanel, BorderLayout.SOUTH);
-		backgroundImage = Toolkit.getDefaultToolkit().createImage("data\\Background.jpg");
+		backgroundImage = Toolkit.getDefaultToolkit().createImage("data\\Icons\\Background.jpg");
 		kmlLogger = new KML_Logger(gameNumber);
-		
+
 		// Manual game threads
 		manualChooseLocation = new Thread() {
 			public void run() {
@@ -208,7 +210,7 @@ public class MyGameGUI extends JPanel {
 				int mToKML = JOptionPane.showConfirmDialog(null, "Export to KML?", "Export", JOptionPane.YES_NO_OPTION);
 				if (mToKML == JOptionPane.YES_OPTION) {
 					kmlLogger.closeDocument();
-					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//kmlfiles/" +gameNumber;
+					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//KML/" + gameNumber;
 					myGame.sendKML(remark);
 					System.exit(0);
 				}
@@ -230,7 +232,7 @@ public class MyGameGUI extends JPanel {
 					int autoSrcNode = bestFruit.getEdge().getSrc();
 					myGame.addRobot(autoSrcNode);
 					gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
-					
+
 					repaint();
 					robotsCounter++;
 				}
@@ -266,12 +268,12 @@ public class MyGameGUI extends JPanel {
 							bestFruit = Automated.getBestFruit(gameFruits);
 							gameFruits = Automated.removeBestFruit(gameFruits, bestFruit);
 						}
-						
+
 						repaint();
 						robotsCounter++;
 					}
 				}
-				
+
 				myGame.startGame();
 				autoMoveCharacter.start();
 			}
@@ -296,16 +298,16 @@ public class MyGameGUI extends JPanel {
 							int robotSN = autoGameRobot.getInt("id");
 							int autoRobotSrc = autoGameRobot.getInt("src");
 							int autoRobotDest = autoGameRobot.getInt("dest");
-					
+
 							autoRobotDest = Automated.getNext(gameFruits, gameGraph, autoRobotSrc);
 							myGame.chooseNextEdge(robotSN, autoRobotDest);
 						}
-						
+
 					} catch (Exception e) {
 						System.out.println("Exception");
 						e.printStackTrace();
 					}
-					
+
 					if (gameNumber == -31) REFRESH = 10;
 					else if (gameNumber == 5) REFRESH = 120;
 					else if (gameNumber == 23) {
@@ -315,7 +317,7 @@ public class MyGameGUI extends JPanel {
 							refreshChange = System.currentTimeMillis();
 						} 
 					}
-					
+
 					if (System.currentTimeMillis() - start > REFRESH) {
 						myGame.move();
 						movesNum++;
@@ -325,13 +327,13 @@ public class MyGameGUI extends JPanel {
 				}
 
 				ImageIcon gameOverIcon;
-				gameOverIcon = new ImageIcon("data\\Gameover.png");
+				gameOverIcon = new ImageIcon("data\\Icons\\Gameover.png");
 				JOptionPane.showMessageDialog(null, null, "", JOptionPane.PLAIN_MESSAGE, gameOverIcon);
 
 				int aToKML = JOptionPane.showConfirmDialog(null, "Export to KML?", "Export", JOptionPane.YES_NO_OPTION);
 				if (aToKML == JOptionPane.YES_OPTION) {
 					kmlLogger.closeDocument();
-					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//kmlfiles/" +gameNumber;
+					String remark = "C:\\Users\\yahav\\eclipse-workspace\\T3\\data//KML/" + gameNumber;
 					myGame.sendKML(remark);
 					System.exit(0);
 				}
@@ -339,7 +341,7 @@ public class MyGameGUI extends JPanel {
 				else System.exit(0);
 			}
 		};
-		
+
 		// Server login
 		String idNumber = JOptionPane.showInputDialog("Enter ID number");
 		Game_Server.login(Integer.parseInt(idNumber));
@@ -360,13 +362,13 @@ public class MyGameGUI extends JPanel {
 
 		// Read fruits and robots images
 		try {
-			File appleFile = new File("data\\Red.png");
+			File appleFile = new File("data\\Icons\\Red.png");
 			appleImage = ImageIO.read(appleFile);
-			File bananaFile = new File("data\\Yellow.png");
+			File bananaFile = new File("data\\Icons\\Yellow.png");
 			bananaImage = ImageIO.read(bananaFile);
-			File marioFile = new File("data\\Mario.png");
+			File marioFile = new File("data\\Icons\\Mario.png");
 			marioImage = ImageIO.read(marioFile);
-			File luigiFile = new File("data\\Luigi.png");
+			File luigiFile = new File("data\\Icons\\Luigi.png");
 			luigiImage = ImageIO.read(luigiFile);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -376,31 +378,55 @@ public class MyGameGUI extends JPanel {
 		moveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean vFlag = true;
-				String robNumber = JOptionPane.showInputDialog("Enter robot serial number");
-				try {
-					int robotNumber = Integer.parseInt(robNumber);
-					if (robotNumber < 0) throw new RuntimeException();
-					if (robotNumber >= robotsNum) throw new RuntimeException();
-				} catch (Exception Ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
-					vFlag = false;
-				}
-
-				if (vFlag) {
-					String destNode = JOptionPane.showInputDialog("Enter destination node");
+				if (!autoMode) {
+					boolean vFlag = true;
+					String robNumber = JOptionPane.showInputDialog("Enter character number");
 					try {
-						int destinationNode = Integer.parseInt(destNode);
-						if (gameGraph.getNode(destinationNode) == null) throw new RuntimeException();
-						myGame.chooseNextEdge(Integer.parseInt(robNumber), destinationNode);
+						int robotNumber = Integer.parseInt(robNumber);
+						if (robotNumber < 0) throw new RuntimeException();
+						if (robotNumber >= robotsNum) throw new RuntimeException();
 					} catch (Exception Ex) {
 						JOptionPane.showMessageDialog(null, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+						vFlag = false;
+					}
+
+					if (vFlag) {
+						String destNode = JOptionPane.showInputDialog("Enter destination node");
+						try {
+							int destinationNode = Integer.parseInt(destNode);
+							if (gameGraph.getNode(destinationNode) == null) throw new RuntimeException();
+							myGame.chooseNextEdge(Integer.parseInt(robNumber), destinationNode);
+						} catch (Exception Ex) {
+							JOptionPane.showMessageDialog(null, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
 			}
 		});
+		
+		// Game mode
+		if (!modeFlag) {
+			Object[] charSelection = {"Mario", "Luigi"};
+			Object selectedChar = JOptionPane.showInputDialog(null, "Select character",
+					"Character", JOptionPane.QUESTION_MESSAGE, null, charSelection, "Mario");
+
+			ImageIcon charIcon;
+			if (selectedChar == "Mario") charIcon = new ImageIcon("data\\Icons\\Mario.png");
+			
+			else {
+				charIcon = new ImageIcon("data\\Icons\\Luigi.png");
+				marioFlag = false;
+			}
+
+			Object[] modeSelection = {"Manual", "Automatic"};
+			Object selectedMode = JOptionPane.showInputDialog(null, "Select game mode",
+					"Game mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automatic");
+
+			if (selectedMode != "Manual") autoMode = true;
+			modeFlag = true;
+		}
 	}
-	
+
 	/**
 	 * This method paints the game, depends on the current level and characters move.
 	 */
@@ -418,7 +444,7 @@ public class MyGameGUI extends JPanel {
 		double maxY = Scaling.getMaxY(nodesCol);
 		double invertedSrc, invertedDest;
 
-		// Black edges drawl
+		// Paint black edges
 		for (node_data node : nodesCol) {
 			Collection<edge_data> edgesCol = gameGraph.getE(node.getKey());
 			for (edge_data edge : edgesCol) {
@@ -439,7 +465,7 @@ public class MyGameGUI extends JPanel {
 			}
 		}
 
-		// Red nodes drawl on top of edges
+		// Paint red nodes on top of edges
 		for (node_data node : nodesCol) {
 			Point3D nodeLocation = node.getLocation();
 			g.setColor(Color.RED);
@@ -447,15 +473,15 @@ public class MyGameGUI extends JPanel {
 			double scaledY = Scaling.scale(nodeLocation.y() ,minY, maxY, OFFSET, (double)Y_RANGE - OFFSET);
 			invertedSrc = Y_RANGE - scaledY;
 			g.fillOval((int)scaledX, (int)invertedSrc, 10, 10);
-			g.drawString("" +node.getKey(), (int)scaledX, (int)invertedSrc - 5);
-			
+			g.drawString("" + node.getKey(), (int)scaledX, (int)invertedSrc - 5);
+
 			if (!nodeJustOnce)
 				kmlLogger.addNodePlaceMark(node.getLocation().toString());
 		}
 
 		nodeJustOnce = true; // Export nodes to KML just once
 
-		// Fruits drawl
+		// Paint fruits
 		List<String> fruitsList = myGame.getFruits();
 		for (String myFruit : fruitsList) {
 			Fruit newFruit = new Fruit(myFruit, gameGraph);
@@ -465,16 +491,16 @@ public class MyGameGUI extends JPanel {
 			fruitX = Scaling.scale(fruitX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			fruitY = Scaling.scale(fruitY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			invertedDest = Y_RANGE - fruitY;
-			
+
 			if (newFruit.getType() == 1)
 				g.drawImage(appleImage, (int)fruitX - 5, (int)invertedDest - 5, 20, 20, this);
 			else
 				g.drawImage(bananaImage, (int)fruitX - 5, (int)invertedDest - 5, 20, 20, this);
-			
+
 			kmlLogger.addFruitPlaceMark(newFruit.getType(), newFruit.getPos().toString());
 		}
 
-		// Robots drawl
+		// Paint robots
 		List<String> robotsList = myGame.getRobots();
 		for (String myRobot : robotsList) {
 			Robot newRobot = new Robot(myRobot);
@@ -484,54 +510,31 @@ public class MyGameGUI extends JPanel {
 			robotX = Scaling.scale(robotX, minX, maxX, OFFSET, X_RANGE - OFFSET);
 			robotY = Scaling.scale(robotY, minY, maxY, OFFSET, Y_RANGE - OFFSET);
 			invertedDest = Y_RANGE - robotY;
-			
+
 			if (marioFlag)
 				g.drawImage(marioImage, (int)robotX - 20, (int)invertedDest - 20, 40, 60, this);
 			else
 				g.drawImage(luigiImage, (int)robotX - 20, (int)invertedDest - 20, 50, 60, this);
-			
+
 			kmlLogger.addRobotPlaceMark(newRobot.getPos().toString());
 		}
 
-		// Remaining time, total score and moves number drawl
+		// Paint remaining time, total score and number of moves
 		g.setFont(new Font("Comic Sans MS", Font.BOLD, 15));
 		g.setColor(Color.BLACK);
 		long timeLeft = myGame.timeToEnd() / 1000;
 		if (timeLeft < 10) g.setColor(Color.RED);
-		g.drawString("Remaining time : " +timeLeft, X_RANGE - 150, 20);
+		g.drawString("Remaining time : " + timeLeft, X_RANGE - 150, 20);
 		g.setColor(Color.BLACK);
-		g.drawString("Total game score : " +totalGameScore, X_RANGE - 1190, 20);
-		g.drawString("Moves : " +movesNum, X_RANGE - 1190, 40);
-
-		// Game mode
-		if (!modeFlag) {
-			Object[] charSelection = {"Mario", "Luigi"};
-			Object selectedChar = JOptionPane.showInputDialog(null, "Select character",
-					"Character", JOptionPane.QUESTION_MESSAGE, null, charSelection, "Mario");
-
-			ImageIcon charIcon;
-			if (selectedChar == "Mario") charIcon = new ImageIcon("data\\Mario.png");
-			else {
-				charIcon = new ImageIcon("data\\Luigi.png");
-				marioFlag = false;
-			}
-
-			Object[] modeSelection = {"Manual", "Automatic"};
-			Object selectedMode = JOptionPane.showInputDialog(null, "Select game mode",
-					"Game mode", JOptionPane.QUESTION_MESSAGE, charIcon, modeSelection, "Automatic");
-
-			if (selectedMode != "Manual") autoMode = true;
-			modeFlag = true;
-		}
-
+		g.drawString("Total game score : " + totalGameScore, X_RANGE - 1190, 20);
+		g.drawString("Moves : " + movesNum, X_RANGE - 1190, 40);
+		
 		if (!autoMode) {
 			if (!manualChooseLocation.isAlive() && !manualMoveCharacter.isAlive())
 				manualChooseLocation.start();
 		}
 
-		else {
-			if (!autoChooseLocation.isAlive() && !autoMoveCharacter.isAlive())
-				autoChooseLocation.start();
-		}
+		else if (!autoChooseLocation.isAlive() && !autoMoveCharacter.isAlive())
+			autoChooseLocation.start();
 	}
 }

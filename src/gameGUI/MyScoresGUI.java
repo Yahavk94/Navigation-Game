@@ -36,26 +36,26 @@ public class MyScoresGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         String[] tableColumns = new String[] {"Num", "ID", "Level", "Score", "Moves", "Date"};
 		Object[] selectionMenu = {"Personal ranking", "Global ranking", "Our high scores"};
-		Object selectedChoice = JOptionPane.showInputDialog(null, "Choose",
+		Object usersChoice = JOptionPane.showInputDialog(null, "Choose",
 				"Main menu", JOptionPane.QUESTION_MESSAGE, null, selectionMenu, "Personal ranking");
 		
-		if (selectedChoice == "Personal ranking") {
+		if (usersChoice == "Personal ranking") {
 			gameResults = SimpleDB.printUserLog(YAHAV, DANIEL);
 			scoresTable = new JTable(gameResults, tableColumns);
 			this.add(new JScrollPane(scoresTable));
 		}
 		
-		else if (selectedChoice == "Global ranking") {
+		else if (usersChoice == "Global ranking") {
 			Object[] stageSelection = {"0", "1", "3", "5", "9", "11", "13", "16", "19", "20", "23"};
 			String initialStage = "0";
 			Object selectedStage = JOptionPane.showInputDialog(null, "Choose",
 					"Main menu", JOptionPane.QUESTION_MESSAGE, null, stageSelection, initialStage);
 			
 			ArrayList<Triple> arr = SimpleDB.getRankingForLevel(Integer.parseInt((String) selectedStage));
-			JOptionPane.showMessageDialog(this, "Ranking in class for level " +selectedStage + " : " +SimpleDB.ourRanking(arr, YAHAV, DANIEL, Integer.parseInt((String) selectedStage)));
+			JOptionPane.showMessageDialog(this, "Ranking in class for level " + selectedStage + " : " + SimpleDB.ourRanking(arr, YAHAV, DANIEL, Integer.parseInt((String)selectedStage)));
 		}
 		
-		else if (selectedChoice == "Our high scores") {
+		else if (usersChoice == "Our high scores") {
 			ArrayList<Integer> arr = SimpleDB.getHighscores(YAHAV, DANIEL);
 			String[] ourHighScoresColumns = new String[] {"Level", "Score"};
 			Object[][] arrObj = {{0, arr.get(0)},

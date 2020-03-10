@@ -69,8 +69,7 @@ public class Triple implements Comparable<Triple>{
 	public int compareTo(Triple o) {
 		if (this.getScore() < o.getScore())
 			return 1;
-		else if (this.getScore() > o.getScore())
-			return -1;
+		else if (this.getScore() > o.getScore()) return -1;
 		return 0;
 	}
 	
@@ -79,7 +78,7 @@ public class Triple implements Comparable<Triple>{
 	 */
 	
 	public String toString() {
-		return "ID : " +this.getID() + ", score : " +this.getScore() + ", moves : " +this.getMoves();
+		return "ID : " + this.getID() + ", score : " + this.getScore() + ", moves : " + this.getMoves();
 	}
 	
 	/**

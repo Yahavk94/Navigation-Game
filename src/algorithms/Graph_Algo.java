@@ -17,14 +17,13 @@ import dataStructure.node_data;
 
 /**
  * This class defines a DGraph field and operates one of the following methods on a directed graph.
- * 1. init - init a directed graph with a graph parameter or a file.
- * 2. save - save the graph to a file.
- * 3. copy - compute a deep copy of this graph.
- * 4. isConnected - returns true if and only if there is a valid path from EVREY node to each
- * other node.
- * 5. shortestPathDist - returns the length of the shortest path between src to dest.
- * 6. shortestPath - returns the shortest path between src to dest, as an ordered list of nodes.
- * 7. TSP - computes a relatively short path which visit each node in the targets list.
+ * Init a directed graph with a graph parameter or a file.
+ * Save the graph to a file.
+ * Compute a deep copy of this graph.
+ * Return true if and only if there is a valid path from EVREY node to each other node.
+ * Return the length of the shortest path between src to dest.
+ * Return the shortest path between src to dest, as an ordered list of nodes.
+ * Compute a relatively short path which visit each node in the targets list.
  * @author Yahav Karpel and Daniel Korotine.
  */
 
@@ -44,7 +43,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	/**
 	 * This method initializes the directed graph with a given graph values.
 	 */
-
+	
 	@Override
 	public void init(graph g) {
 		this.graphAlgo = (DGraph)g;
@@ -120,7 +119,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	 */
 	
 	@Override
-	public double shortestPathDist(int src, int dest) { // Dijkstra
+	public double shortestPathDist(int src, int dest) { // Single source shortest path (Dijkstra algorithm)
 		node_data startNode = this.graphAlgo.getNode(src);
 		startNode.setWeight(0);
 		startNode.setInfo("Not visited");
@@ -135,17 +134,17 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			}
 		}
 
-		gN.add(startNode); // gN (Priority queue) contains startNode
+		gN.add(startNode); // gN (Priority queue) contains startNode only
 		
 		while (!gN.isEmpty()) {
 			node_data anyNode = gN.remove();
 			anyNode.setInfo("Visited");
-			Collection<edge_data> edgesCol = this.graphAlgo.getE(anyNode.getKey()); // Adjacency nodes
+			Collection<edge_data> edgesCol = this.graphAlgo.getE(anyNode.getKey()); // Adjacent nodes
 			if (edgesCol != null) {
 				for (edge_data graphEdge : edgesCol) {
 					node_data nNode = this.graphAlgo.getNode(graphEdge.getDest()); // Destination node
-					if (anyNode.getWeight() + graphEdge.getWeight() < nNode.getWeight()) {
-						nNode.setWeight(anyNode.getWeight() + graphEdge.getWeight()); // Relaxation
+					if (anyNode.getWeight() + graphEdge.getWeight() < nNode.getWeight()) { // Relaxation step
+						nNode.setWeight(anyNode.getWeight() + graphEdge.getWeight());
 						nNode.setTag(anyNode.getKey());
 						gN.add(nNode);
 					}
@@ -157,14 +156,13 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	}
 	
 	/**
-	 * This method returns a LinkedList represents the shortest path between chosen nodes, using
+	 * This method returns a LinkedList represents the shortest path between the chosen nodes, using
 	 * Dijkstra's algorithm (shortestPathDist).
 	 */
 	
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		if (this.shortestPathDist(src, dest) == Double.POSITIVE_INFINITY) // Check path nonexistence
-			return null;
+		if (this.shortestPathDist(src, dest) == Double.POSITIVE_INFINITY) return null; // Check path nonexistence
 
 		List<node_data> pathNodes = new LinkedList<>();
 		node_data currentNode = this.graphAlgo.getNode(dest);
@@ -209,8 +207,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 			if (shortestPath(srcNode, destNode) == null) return null; // No path
 			
 			List<node_data> newPath = (List<node_data>)shortestPath(srcNode, destNode);
-			if (i != 2) // Remove newPath's srcNode to avoid duplications
-				newPath.remove(newPath.get(0));
+			if (i != 2) newPath.remove(newPath.get(0)); // Remove newPath's srcNode to avoid duplications
 			nodesPath.addAll(newPath); // Add newPath
 			srcNode = destNode;
 		}
@@ -219,7 +216,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	}
 	
 	/**
-	 * This method returns a deep copy of graphAlgo's field.
+	 * This method returns a deep copy of the directed graph.
 	 */
 	
 	@Override
@@ -239,14 +236,12 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 
 		return dGraph;
 	}
-
-	/* -------------------- Private functions -------------------- */
 	
 	/**
 	 * Given any graph, this private method operates an iterative DFS.
 	 * One of the parameters is a boolean array, which indicates whether it's index (refers to a node number)
 	 * is already discovered during the procedure.
-	 * Using iterative DFS might prevent stack overflow (In case of a very large graph).
+	 * Using iterative DFS may avoid stack overflow (In case of a very large graph).
 	 * @param dGraph
 	 * @param dNodes
 	 */
@@ -273,7 +268,7 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	}
 	
 	/**
-	 * This private method returns graphAlgo's tranposed graph.
+	 * This private method returns the tranposed graph.
 	 * @return transposedGraph
 	 */
 

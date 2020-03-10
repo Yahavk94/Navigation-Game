@@ -99,7 +99,7 @@ public class KML_Logger {
 		content.append("  </Document>\r\n");
 		content.append("</kml>");
 		try {
-			PrintWriter pw = new PrintWriter(new File("data//kmlfiles/" + levelNumber + ".kml"));
+			PrintWriter pw = new PrintWriter(new File("data//KML/" + levelNumber + ".kml"));
 			pw.write(content.toString());
 			pw.close();
 		} catch (FileNotFoundException e) {

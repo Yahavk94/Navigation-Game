@@ -39,7 +39,7 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 	}
 
 	private void initGUI() {
-		this.setSize(600,600); // Size has been adjusted to my graph
+		this.setSize(600,600);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -106,13 +106,12 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 		for (node_data nD : nodesCol) {
 			Point3D pSrc = nD.getLocation();
 
-			// Start black node drawl
+			// Paint black nodes
 			graphDrawer.setColor(Color.BLACK);
 			graphDrawer.fillOval(pSrc.ix(), pSrc.iy(), 10, 10);
 			String nodeNumber = "";
 			nodeNumber += nD.getKey();
 			graphDrawer.drawString(nodeNumber, pSrc.ix(), pSrc.iy() - 5);
-			// End black node drawl
 
 			Collection<edge_data> edgesCol = dgraph.getE(nD.getKey());
 			if (edgesCol != null) {
@@ -120,26 +119,23 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 					node_data destNode = dgraph.getNode(eD.getDest());
 					Point3D pDest = destNode.getLocation();
 
-					// Start red edge drawl
+					// Paint red edges
 					graphDrawer.setColor(Color.RED);
 					graphDrawer.drawLine(pSrc.ix() + 5, pSrc.iy() + 5, pDest.ix() + 5, pDest.iy() + 5);
-					// End red edge drawl
 
-					// Start dark Gray edge weight drawl
+					// Paint dark Gray edge weight.
 					graphDrawer.setColor(Color.DARK_GRAY);
 					String edgeWeight = "";
 					edgeWeight += eD.getWeight();
 					double xDrawer = (pSrc.x() + pDest.x()) / 2 + 7;
 					double yDrawer = (pSrc.y() + pDest.y()) / 2 + 7;
 					graphDrawer.drawString(edgeWeight, (int)xDrawer, (int)yDrawer);
-					// End dark Gray edge weight drawl
 
-					// Start yellow edge direction drawl
+					// Paint yellow edge direction
 					graphDrawer.setColor(Color.YELLOW);
 					double directionX = ((pSrc.x() + 2) * 8 + (pDest.x()) + 2) / 9;
 					double directionY = ((pSrc.y() + 2) * 8 + (pDest.y()) + 2) / 9;
 					graphDrawer.fillOval((int)directionX, (int)directionY, 10, 10);
-					// End yellow edge direction drawl
 				}
 			}
 		}
@@ -149,7 +145,7 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 	public void actionPerformed(ActionEvent e) {
 		String strCommand = e.getActionCommand();
 		
-		if (strCommand.equals("Init")) { // Load a graph by text
+		if (strCommand.equals("Init")) {
 			String graphFileName = JOptionPane.showInputDialog("Enter file name");
 			try {
 				myGraph.init(graphFileName);
@@ -159,7 +155,7 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 			}
 		}
 
-		if (strCommand.equals("Save")) { // Save graph by text
+		if (strCommand.equals("Save")) {
 			String graphFileName = JOptionPane.showInputDialog("Enter file name");
 			try {
 				myGraph.save(graphFileName);
@@ -181,14 +177,15 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 			dGraph = myGraph.copy();
 			String srcId = JOptionPane.showInputDialog(this, "Enter source node");
 			
-			boolean sFlag = true; // Start source node validity check
+			// Source node validity check
+			boolean sFlag = true;
 			try {
 				if (dGraph.getNode(Integer.parseInt(srcId)) == null)
 					throw new RuntimeException();
 			} catch (Exception E) {
 				JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
 				sFlag = false;
-			} // End source node validity check
+			}
 
 			if (sFlag) {
 				String destId = JOptionPane.showInputDialog(this, "Enter destination node");
@@ -210,15 +207,16 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 			graph dGraph = new DGraph();
 			dGraph = myGraph.copy();
 			String srcId = JOptionPane.showInputDialog(this, "Enter source node");
-
-			boolean sFlag = true; // Start source node validity check
+			
+			// Source node validity check
+			boolean sFlag = true;
 			try {
 				if (dGraph.getNode(Integer.parseInt(srcId)) == null)
 					throw new RuntimeException();
 			} catch (Exception E) {
 				JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
 				sFlag = false;
-			} // End source node validity check
+			}
 
 			if (sFlag) {
 				String destId = JOptionPane.showInputDialog(this, "Enter destination node");
@@ -284,13 +282,14 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 			String srcId = JOptionPane.showInputDialog(this, "Enter source node");
 			boolean sFlag = true;
 			
-			try { // Start source node validity check
+			// Source node validity check
+			try {
 				if (dGraph.getNode(Integer.parseInt(srcId)) == null)
 					throw new RuntimeException();
 			} catch (Exception E) {
 				JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
 				sFlag = false;
-			} // End source node validity check
+			}
 
 			if (sFlag) {
 				String destId = JOptionPane.showInputDialog(this, "Enter destination node");
@@ -338,13 +337,14 @@ public class Graph_GUI extends JFrame implements ActionListener, MouseListener {
 			String srcId = JOptionPane.showInputDialog(this, "Enter source node");
 			boolean sFlag = true;
 			
-			try { // Start source node validity check
+			// Source node validity check
+			try {
 				if (dGraph.getNode(Integer.parseInt(srcId)) == null)
 					throw new RuntimeException();
 			} catch (Exception E) {
 				JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
 				sFlag = false;
-			} // End source node validity check
+			}
 
 			if (sFlag) {
 				String destId = JOptionPane.showInputDialog(this, "Enter destination node");
